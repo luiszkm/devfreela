@@ -1,0 +1,1 @@
+﻿global using DomainEntity = DevFreela.Domain.Domain.Entities;

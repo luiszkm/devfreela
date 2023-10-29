@@ -1,7 +1,7 @@
 ﻿using DevFreela.Domain.Domain.seddwork;
 
 namespace DevFreela.Domain.Domain.Entities;
-public class Skill : AgregateRoot
+public class Skill : AggregateRoot
 {
     public Skill(string description)
     {

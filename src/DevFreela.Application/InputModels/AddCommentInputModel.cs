@@ -4,6 +4,6 @@ namespace DevFreela.Application.InputModels;
 public class AddCommentInputModel
 {
     public string Content { get; set; }
-    public int IdUser { get; set; }
-    public int IdProject { get; set; }
+    public Guid IdUser { get; set; }
+    public Guid IdProject { get; set; }
 }

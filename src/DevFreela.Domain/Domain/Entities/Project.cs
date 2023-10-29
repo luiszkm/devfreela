@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using DevFreela.Domain.Domain.Enums;
 using DevFreela.Domain.Domain.seddwork;
 
 namespace DevFreela.Domain.Domain.Entities;
 
-public class Project : AgregateRoot
+public class Project : AggregateRoot
 {
 
-    public Project(string title, string description, int idClient, int idFreelancer, decimal totalCost)
+    public Project(string title,
+        string description,
+        Guid idClient,
+        Guid idFreelancer,
+        decimal totalCost)
     {
         Title = title;
         Description = description;
@@ -27,9 +27,9 @@ public class Project : AgregateRoot
 
     public string Title { get; private set; }
     public string Description { get; private set; }
-    public int IdClient { get; private set; }
+    public Guid IdClient { get; private set; }
     public User Client { get; private set; }
-    public int IdFreelancer { get; private set; }
+    public Guid IdFreelancer { get; private set; }
     public User Freelancer { get; private set; }
     public decimal TotalCost { get; set; }
     public DateTime CreatedAt { get; private set; }

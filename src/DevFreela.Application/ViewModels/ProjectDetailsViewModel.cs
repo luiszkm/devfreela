@@ -6,7 +6,9 @@ public class ProjectDetailsViewModel
         string description,
         decimal totalCost,
         DateTime? startedAt,
-        DateTime? finishedAt)
+        DateTime? finishedAt,
+        string clientFullName,
+        string freelancerFullName)
     {
         Id = id;
         Title = title;
@@ -14,6 +16,8 @@ public class ProjectDetailsViewModel
         TotalCost = totalCost;
         StartedAt = startedAt;
         FinishedAt = finishedAt;
+        ClientFullName = clientFullName;
+        FreelancerFullName = freelancerFullName;
     }
 
     public Guid Id { get; set; }
@@ -22,4 +26,6 @@ public class ProjectDetailsViewModel
     public decimal TotalCost { get; set; }
     public DateTime? StartedAt { get; set; }
     public DateTime? FinishedAt { get; set; }
+    public string ClientFullName { get; set; }
+    public string FreelancerFullName { get; set; }
 }

@@ -9,15 +9,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevFreela.UnitTests", "test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C06226F9-4714-4824-BB43-FF2A6805DEA3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevFreela.API", "src\DevFreela.API\DevFreela.API.csproj", "{2AB8A2CA-460D-4DD2-A47E-77F5370C4984}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevFreela.Domain", "src\DevFreela.Domain\DevFreela.Domain.csproj", "{91F4524B-08A9-40CA-B60D-1EC16A65EDE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevFreela.Infrastructure", "src\DevFreela.Infrastructure\DevFreela.Infrastructure.csproj", "{BB3FC19E-8AC8-4238-926C-B00DC5277352}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevFreela.Infrastructure", "src\DevFreela.Infrastructure\DevFreela.Infrastructure.csproj", "{BB3FC19E-8AC8-4238-926C-B00DC5277352}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevFreela.Application", "src\DevFreela.Application\DevFreela.Application.csproj", "{F1D0AC3A-1189-4D00-B3D4-788C83BD8263}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevFreela.Application", "src\DevFreela.Application\DevFreela.Application.csproj", "{F1D0AC3A-1189-4D00-B3D4-788C83BD8263}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevFreela.IntegrationTest", "tests\DevFreela.IntegrationTest\DevFreela.IntegrationTest.csproj", "{DF32FCD4-7AAE-44D2-99A8-90BBBB86199D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevFreela.IntegrationTest", "tests\DevFreela.IntegrationTest\DevFreela.IntegrationTest.csproj", "{DF32FCD4-7AAE-44D2-99A8-90BBBB86199D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevFreela.API", "src\DevFreela.API\DevFreela.API\DevFreela.API.csproj", "{4E2CCD25-A582-4608-9D98-3F7F86641D89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,6 @@ Global
 		{F54B257D-0824-45D6-9052-CC62AF50B2DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F54B257D-0824-45D6-9052-CC62AF50B2DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F54B257D-0824-45D6-9052-CC62AF50B2DF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2AB8A2CA-460D-4DD2-A47E-77F5370C4984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2AB8A2CA-460D-4DD2-A47E-77F5370C4984}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2AB8A2CA-460D-4DD2-A47E-77F5370C4984}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2AB8A2CA-460D-4DD2-A47E-77F5370C4984}.Release|Any CPU.Build.0 = Release|Any CPU
 		{91F4524B-08A9-40CA-B60D-1EC16A65EDE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{91F4524B-08A9-40CA-B60D-1EC16A65EDE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91F4524B-08A9-40CA-B60D-1EC16A65EDE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -49,17 +45,21 @@ Global
 		{DF32FCD4-7AAE-44D2-99A8-90BBBB86199D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF32FCD4-7AAE-44D2-99A8-90BBBB86199D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF32FCD4-7AAE-44D2-99A8-90BBBB86199D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E2CCD25-A582-4608-9D98-3F7F86641D89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E2CCD25-A582-4608-9D98-3F7F86641D89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E2CCD25-A582-4608-9D98-3F7F86641D89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E2CCD25-A582-4608-9D98-3F7F86641D89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F54B257D-0824-45D6-9052-CC62AF50B2DF} = {4A935E00-C455-4989-980E-3756711AFE5A}
-		{2AB8A2CA-460D-4DD2-A47E-77F5370C4984} = {C06226F9-4714-4824-BB43-FF2A6805DEA3}
 		{91F4524B-08A9-40CA-B60D-1EC16A65EDE9} = {C06226F9-4714-4824-BB43-FF2A6805DEA3}
 		{BB3FC19E-8AC8-4238-926C-B00DC5277352} = {C06226F9-4714-4824-BB43-FF2A6805DEA3}
 		{F1D0AC3A-1189-4D00-B3D4-788C83BD8263} = {C06226F9-4714-4824-BB43-FF2A6805DEA3}
 		{DF32FCD4-7AAE-44D2-99A8-90BBBB86199D} = {4A935E00-C455-4989-980E-3756711AFE5A}
+		{4E2CCD25-A582-4608-9D98-3F7F86641D89} = {C06226F9-4714-4824-BB43-FF2A6805DEA3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61D088D4-DFF6-4964-8125-37A73031F021}

@@ -4,16 +4,16 @@ using DevFreela.Domain.Domain.seddwork;
 
 namespace DevFreela.Domain.Domain.Entities;
 
-public class UserSkill : AgregateRoot
+public class UserSkill : AggregateRoot
 {
-    public UserSkill(int idUser, int idSkill)
+    public UserSkill(Guid idUser, Guid idSkill)
     {
         IdUser = idUser;
         IdSkill = idSkill;
     }
 
-    public int IdUser { get; private set; }
-    public int IdSkill { get; private set; }
+    public Guid IdUser { get; private set; }
+    public Guid IdSkill { get; private set; }
 
     public Skill Skill { get; private set; }
 

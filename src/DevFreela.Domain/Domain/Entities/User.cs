@@ -2,20 +2,20 @@
 
 using DevFreela.Domain.Domain.seddwork;
 using DevFreela.Domain.Domain.Validation;
-using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace DevFreela.Domain.Domain.Entities;
-public class User : AgregateRoot
+public class User : AggregateRoot
 {
+
     public User(
-        string fullName,
+        string name,
         string email,
         string password,
         DateTime birthDate)
     {
-        Name = fullName;
+        Name = name;
         Email = email;
         BirthDate = birthDate;
         Active = true;
@@ -32,7 +32,7 @@ public class User : AgregateRoot
     public string Email { get; private set; }
     public DateTime BirthDate { get; private set; }
     private string _password { get; set; }
-
+    public string Password { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
@@ -68,6 +68,7 @@ public class User : AgregateRoot
     {
         _password = HashPassword(password);
         Validate();
+        Password = _password;
     }
 
     public bool VerifyPassword(string password)

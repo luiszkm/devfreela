@@ -1,13 +1,24 @@
-﻿using DevFreela.Domain.Domain.Entities;
+﻿using System.Reflection;
+using DevFreela.Domain.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Infrastructure.Persistence;
-public class DevFreelaDbContext
+public class DevFreelaDbContext : DbContext
 {
+    public DevFreelaDbContext(DbContextOptions<DevFreelaDbContext> options) :
+        base(options)
+    {
 
-    public List<User> Users { get; set; }
-    public List<Project> Projects { get; set; }
-    public List<Skill> Skills { get; set; }
+    }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<Skill> Skills { get; set; }
+    public DbSet<UserSkill> UserSkills { get; set; }
+    public DbSet<ProjectComment> ProjectComments { get; set; }
 
-    public List<ProjectComment> ProjectComments { get; set; }
-
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder
+            .ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
 }
