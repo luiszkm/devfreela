@@ -1,4 +1,5 @@
 ﻿
+using DevFreela.Domain.Domain.Enums;
 using DevFreela.UnitTests.Common;
 
 namespace DevFreela.UnitTests.Domain.Entities.User;
@@ -16,7 +17,8 @@ public class UserTestFixture : BaseFixture
     => Faker.Person.Email;
 
     public string GetValidPassword()
-    => "12345678";
+    => Faker.Internet.Password();
+
 
     public DateTime GetValidBirthDate()
     => Faker.Person.DateOfBirth;
@@ -26,7 +28,9 @@ public class UserTestFixture : BaseFixture
             GetValidName(),
             GetValidName(),
             GetValidPassword(),
-            GetValidBirthDate()
+            GetValidBirthDate(),
+            UserRole.Client
     );
+
 
 }

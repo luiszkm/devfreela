@@ -3,11 +3,17 @@
 namespace DevFreela.Domain.Domain.Entities;
 public class Skill : AggregateRoot
 {
-    public Skill(string description)
+    public Skill(string skillName)
     {
-        Description = description;
-        CreatedAt = DateTime.Now;
+        SkillName = skillName;
+        _userSkills = new List<Guid>();
     }
-    public string Description { get; private set; }
-    public DateTime CreatedAt { get; private set; }
+
+    public string SkillName { get; private set; }
+    private List<Guid> _userSkills { get; set; }
+
+    public IReadOnlyList<Guid> UserSkills =>
+        (IReadOnlyList<Guid>)_userSkills.AsReadOnly();
+
+
 }

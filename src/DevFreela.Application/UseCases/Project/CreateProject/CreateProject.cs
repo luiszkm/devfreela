@@ -18,11 +18,10 @@ public class CreateProject : ICreateProject
         var project = new DomainEntity.Project(
             request.Title,
             request.Description,
-            request.IdClient,
-            request.IdFreelancer,
-            request.TotalCost);
+            request.TotalCost,
+            request.IdClient);
 
-        _projectRepository.Create(project, cancellationToken);
+        await _projectRepository.Create(project, cancellationToken);
 
         return ProjectModelOutput.FromProject(project);
     }

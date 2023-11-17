@@ -11,9 +11,16 @@ public class DomainValidation
         if (target is null) throw new EntityValidationExceptions($"{fieldName} should not be null");
     }
 
+
     public static void NotNullOrEmpty(string? target, string fieldName)
     {
         if (String.IsNullOrWhiteSpace(target))
+            throw new EntityValidationExceptions($"{fieldName} should not be empty or null");
+    }
+
+    public static void NotNullOrEmpty(Guid? target, string fieldName)
+    {
+        if (target == null || target == Guid.Empty)
             throw new EntityValidationExceptions($"{fieldName} should not be empty or null");
     }
 

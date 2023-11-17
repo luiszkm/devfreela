@@ -1,5 +1,5 @@
 ﻿namespace DevFreela.Domain.Domain.seddwork;
-public class Entity
+public abstract class Entity
 {
     public Guid Id { get; private set; }
 

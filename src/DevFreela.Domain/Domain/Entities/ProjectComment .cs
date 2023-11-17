@@ -8,7 +8,6 @@ public class ProjectComment : AggregateRoot
         Content = content;
         IdProject = idProject;
         IdUser = idUser;
-
         CreatedAt = DateTime.Now;
     }
 

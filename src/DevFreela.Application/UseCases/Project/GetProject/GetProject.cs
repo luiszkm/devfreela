@@ -1,6 +1,5 @@
 ﻿
 using DevFreela.Application.UseCases.Project.Common;
-using DevFreela.Application.ViewModels;
 using DevFreela.Domain.Domain.Repository;
 
 namespace DevFreela.Application.UseCases.Project.GetProject;

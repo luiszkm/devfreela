@@ -1,4 +1,5 @@
 ﻿using DevFreela.Domain.Domain.Entities;
+using DevFreela.Domain.Domain.Enums;
 using DevFreela.Domain.Domain.seddwork;
 using DevFreela.Domain.Domain.seddwork.SearchbleRepository.cs;
 
@@ -7,7 +8,6 @@ public interface IProjectRepository :
     IGenericRepository<Project>,
     ISearchRepository<Project>
 {
-    void Start(Guid id);
-    void Finish(Guid id);
+    Task ChangeStatus(Guid id, ProjectStatusEnum newStatus, CancellationToken cancellationToken);
     // void AddComment(AddCommentInputModel inputModel);
 }

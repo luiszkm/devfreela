@@ -7,21 +7,18 @@ public class CreateProjectInput : IRequest<ProjectModelOutput>
     public CreateProjectInput(
         string title,
         string description,
-        Guid idClient,
-        Guid idFreelancer,
-        decimal totalCost
+        decimal totalCost,
+        Guid idClient
         )
     {
         Title = title;
         Description = description;
         IdClient = idClient;
-        IdFreelancer = idFreelancer;
         TotalCost = totalCost;
 
     }
     public string Title { get; set; }
     public string Description { get; set; }
     public Guid IdClient { get; set; }
-    public Guid IdFreelancer { get; set; }
     public decimal TotalCost { get; set; }
 }

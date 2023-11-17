@@ -1,7 +1,6 @@
 ﻿
 using DevFreela.Application.UseCases.Project.Common;
 using DevFreela.Domain.Domain.Repository;
-using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Application.UseCases.Project.UpdateProject;
 public class UpdateProject : IUpdateProject
@@ -26,12 +25,7 @@ public class UpdateProject : IUpdateProject
 
         project.Update(request.Title, request.Description, request.TotalCost);
 
-        return new ProjectModelOutput(
-            project.Title,
-            project.Description,
-            project.TotalCost,
-            project.CreatedAt
-            );
+        return ProjectModelOutput.FromProject(project);
     }
 
 }
