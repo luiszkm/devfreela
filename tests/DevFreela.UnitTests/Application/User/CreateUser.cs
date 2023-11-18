@@ -47,7 +47,7 @@ public class CreateUser
         output.BirthDate.Should().Be(input.BirthDate);
         output.Skills.Should().HaveCount(0);
 
-        
+
 
 
     }
@@ -138,7 +138,7 @@ public class CreateUser
         var input = _fixture.GetValidInput();
         input.Password = password;
         var action = async () => await useCase.Handle(input, CancellationToken.None);
-        await action.Should().ThrowAsync<DoesNotMatchSecurityPolicies>();
+        await action.Should().ThrowAsync<EntityValidationExceptions>();
         repositoryMock.Verify(
             r => r.Create(
                 It.IsAny<DomainEntity.User>(),

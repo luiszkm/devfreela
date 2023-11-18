@@ -1,4 +1,6 @@
-﻿using DevFreela.Application.UseCases.User.CreateUser;
+﻿using DevFreela.API.ApiModels.Response;
+using DevFreela.Application.UseCases.User.Common;
+using DevFreela.Application.UseCases.User.CreateUser;
 using DevFreela.Application.UseCases.User.GetUser;
 using DevFreela.Application.UseCases.User.UpdateUser;
 using MediatR;
@@ -22,13 +24,17 @@ public class UsersController : ControllerBase
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateUserInput inputModel)
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult>
+        Create([FromBody] CreateUserInput inputModel)
     {
 
 
         var output = await _mediator.Send(inputModel);
-
-        return CreatedAtAction(nameof(Create), new { id = output.Id }, output);
+        var response = new ApiResponse<UserModelOutput>(output);
+        return CreatedAtAction(
+            nameof(Create),
+            new { id = output.Id }, response);
     }
 
     [HttpGet("{id:guid}")]

@@ -1,22 +1,36 @@
 ﻿
 
+using System.Security.Cryptography;
 using Bogus;
+using DevFreela.Domain.Domain.Enums;
 using DevFreela.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.Text;
 
-namespace DevFreela.UnitTests.Base;
+
+namespace DevFreela.E2ETest.Base;
 public class BaseFixture
 {
+    public BaseFixture()
+    {
+        Faker = new Faker("pt_BR");
+        WebAppFactory = new CustomWebApplicationFactory<Program>();
+        HttpClient = WebAppFactory.CreateClient();
+        ApiClient = new ApiClient(HttpClient);
+        var config = WebAppFactory.Services
+            .GetService(typeof(IConfiguration));
+        ArgumentNullException.ThrowIfNull(config);
+        _dbConnectionString = ((IConfiguration)config)
+            .GetConnectionString("devfreela_e2e");
+    }
     public ApiClient ApiClient { get; set; }
     public HttpClient HttpClient { get; set; }
-    public Faker Faker { get; set; }
+    public CustomWebApplicationFactory<Program> WebAppFactory { get; set; }
 
-    public BaseFixture()
-        => Faker = new Faker("pt_BR");
-    public Decimal GetRandomDecimal()
-        => new Random().Next(1, 10000);
-    public bool GetRandomBoolean()
-        => new Random().NextDouble() < 0.5;
+    private readonly string _dbConnectionString;
+
+    public Faker Faker { get; set; }
 
 
     public string GetValidEmail()
@@ -31,11 +45,48 @@ public class BaseFixture
     public DateTime GetValidBirthDate()
         => Faker.Date.Past(18);
 
-    public string GetValidDescription()
-        => Faker.Lorem.Paragraph();
+
+    private string GetPasswordHash(string password)
+    {
+        var sha256 = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(password);
+        var hash = sha256.ComputeHash(bytes);
+        var builder = new StringBuilder();
+        for (int i = 0; i < hash.Length; i++)
+        {
+            builder.Append(hash[i].ToString("X2"));
+        }
+
+        return builder.ToString();
+    }
 
 
-    public DevFreelaDbContext CreateDbContext(bool preserverData = false)
+    public DomainEntity.User GetValidUser(
+            UserRole role = UserRole.Client,
+            string? email = null,
+            string? password = null)
+            => new(
+                GetValidName(),
+                email ?? GetValidEmail(),
+                password != null ? GetPasswordHash(password) : GetValidPassword(),
+                GetValidBirthDate(),
+                role);
+
+
+
+    public DevFreelaDbContext CreateApiDbContext()
+    {
+        var context = new DevFreelaDbContext(
+            new DbContextOptionsBuilder<DevFreelaDbContext>()
+                .UseMySql(
+                    _dbConnectionString,
+                    ServerVersion.AutoDetect(_dbConnectionString))
+                .Options
+        );
+        return context;
+    }
+
+    public DevFreelaDbContext CreateApiDbContextInMemory(bool preserverData = false)
     {
         var context = new DevFreelaDbContext(
             new DbContextOptionsBuilder<DevFreelaDbContext>()

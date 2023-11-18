@@ -21,7 +21,8 @@ public class CreateSession
 
     public async Task CreateSessionApplication()
     {
-        var user = _fixture.GetValidUser();
+        var password = _fixture.GetValidPassword();
+        var user = _fixture.GetValidUser(password: password);
         var repositoryMock = _fixture.GetUserRepositoryMock();
         var authMock = _fixture.GetAuthRepositoryMock();
 
@@ -35,7 +36,7 @@ public class CreateSession
 
         var input = new SessionUseCase.SessionInput(
                        user.Email,
-                       user.Password);
+                       password);
 
         var output = await useCase.Handle(input, CancellationToken.None);
 
@@ -47,8 +48,8 @@ public class CreateSession
 
         output.Should().NotBeNull();
         output.Token.Should().NotBeEmpty();
-        output.USerID.Should().NotBeEmpty();
-        output.USerID.Should().Be(user.Id);
+        output.UserID.Should().NotBeEmpty();
+        output.UserID.Should().Be(user.Id);
     }
 
     [Fact(DisplayName = nameof(ThrowWhenEmailInvalid))]
@@ -86,7 +87,7 @@ public class CreateSession
     [Trait("Application", "Create - Session")]
     public async Task ThrowWhenPasswordInvalid()
     {
-        var password = _fixture.GetValidPassword();
+        var password = _fixture.GetInvalidPassword();
         var user = _fixture.GetValidUser();
         var repositoryMock = _fixture.GetUserRepositoryMockWithUser(user.Email);
         var authMock = _fixture.GetAuthRepositoryMock();

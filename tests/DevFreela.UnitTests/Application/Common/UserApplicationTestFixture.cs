@@ -23,8 +23,24 @@ public class UserApplicationTestFixture : BaseFixture
     public string GetValidPassword()
         => Faker.Internet.Password();
 
+    public string GetInvalidPassword()
+        => Faker.Internet.Password(7);
     public DateTime GetValidBirthDate()
         => Faker.Person.DateOfBirth;
+
+    private string GetPasswordHash(string password)
+    {
+        var sha256 = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(password);
+        var hash = sha256.ComputeHash(bytes);
+        var builder = new StringBuilder();
+        for (int i = 0; i < hash.Length; i++)
+        {
+            builder.Append(hash[i].ToString("X2"));
+        }
+
+        return builder.ToString();
+    }
 
     public DomainEntity.User GetValidUser(
         string? email = null,
@@ -32,7 +48,7 @@ public class UserApplicationTestFixture : BaseFixture
         => new(
             GetValidName(),
             email ?? GetValidEmail(),
-            password ?? GetValidPassword(),
+            password != null ? GetPasswordHash(password) : GetValidPassword(),
             GetValidBirthDate(),
             UserRole.Client
         );
@@ -54,7 +70,8 @@ public class UserApplicationTestFixture : BaseFixture
     public Mock<IUserRepository> GetUserRepositoryMockWithUser(string email, string? password = null)
     {
         var mock = GetUserRepositoryMock();
-        var user = GetValidUser(email, password);
+        var passwordHash = GetPasswordHash(password ?? GetValidPassword());
+        var user = GetValidUser(email, passwordHash);
         mock.Setup(u => u.GetById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Guid id, CancellationToken cancellationToken) => user);
         return mock;

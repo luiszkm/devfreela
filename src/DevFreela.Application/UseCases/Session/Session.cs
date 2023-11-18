@@ -29,16 +29,11 @@ public class Session : ISession
 
         if (user == null) throw new CredentialInvalid();
 
-        //    if (user.Password != passwordHash) throw new CredentialInvalid();
+        if (user.Password != passwordHash) throw new CredentialInvalid();
 
         var token = _authorization.GenerateToken(user.Id, user.Role);
 
-        var sessionOutput = new SessionOutput(
-            user.Id,
-            token);
-
-
-        return sessionOutput;
+        return SessionOutput.FromUser(user.Id, token);
 
     }
 }

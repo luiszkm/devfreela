@@ -5,6 +5,7 @@ using DevFreela.Application.UseCases.Project.CreateProject;
 using DevFreela.Application.UseCases.Project.DeleteProject;
 using DevFreela.Application.UseCases.Project.GetProject;
 using DevFreela.Application.UseCases.Project.UpdateProject;
+using DevFreela.Domain.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,14 +25,19 @@ public class ProjectsController : ControllerBase
 
 
     [HttpPost]
-    [Authorize(Roles = "client")]
+    [Authorize(Roles = nameof(UserRole.Client))]
     [ProducesResponseType(typeof(ApiResponse<ProjectModelOutput>), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateProjectInput inputModel)
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> Create(
+        [FromBody] CreateProjectInput inputModel)
     {
-        var output = await _mediator.Send(inputModel);
 
-        return CreatedAtAction(nameof(Create), new { id = output }, output);
+        var output = await _mediator.Send(inputModel);
+        var response = new ApiResponse<ProjectModelOutput>(output);
+
+        return CreatedAtAction(nameof(Create), new { id = output }, response);
     }
 
     [HttpGet("{id:guid}")]
