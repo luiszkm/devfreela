@@ -48,8 +48,8 @@ public class CreateSession
 
         output.Should().NotBeNull();
         output.Token.Should().NotBeEmpty();
-        output.UserID.Should().NotBeEmpty();
-        output.UserID.Should().Be(user.Id);
+        output.UserId.Should().NotBeEmpty();
+        output.UserId.Should().Be(user.Id);
     }
 
     [Fact(DisplayName = nameof(ThrowWhenEmailInvalid))]

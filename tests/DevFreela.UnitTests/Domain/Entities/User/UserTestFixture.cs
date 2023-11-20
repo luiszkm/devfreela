@@ -32,5 +32,8 @@ public class UserTestFixture : BaseFixture
             UserRole.Client
     );
 
+    public DomainEntity.Models.UserSkills CreateValidSkill()
+    => new(GetValidGuid(), GetValidGuid());
+
 
 }

@@ -26,15 +26,17 @@ public class UserRepository : IUserRepository
     {
         var user = await _user.SingleOrDefaultAsync(u => u.Id == id, cancellationToken);
         if (user == null)
-            throw new NotFoundException("User not found");
+            throw new NotFoundException();
         return user;
     }
+
+
 
     public async Task Update(User aggregate, CancellationToken cancellationToken)
     {
         var user = await _user.SingleOrDefaultAsync(u => u.Id == aggregate.Id, cancellationToken);
         if (user == null)
-            throw new NotFoundException("User not found");
+            throw new NotFoundException();
 
         user.Update(aggregate.Name, aggregate.Email, aggregate.BirthDate);
         await _dbContext.SaveChangesAsync(cancellationToken);
@@ -64,7 +66,7 @@ public class UserRepository : IUserRepository
             u.Password == passwordHash);
 
         if (user == null)
-            throw new NotFoundException("User not found");
+            throw new NotFoundException();
         return user;
     }
     public Task CreateSession(string email, string password)

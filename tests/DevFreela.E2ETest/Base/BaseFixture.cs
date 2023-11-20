@@ -32,7 +32,10 @@ public class BaseFixture
 
     public Faker Faker { get; set; }
 
-
+    public string GetInvalidEmail()
+        => "aco";
+    public string GetInvalidName()
+        => "a";
     public string GetValidEmail()
         => Faker.Internet.Email().ToLower();
 
@@ -72,7 +75,16 @@ public class BaseFixture
                 GetValidBirthDate(),
                 role);
 
+    public async Task<(DomainEntity.User user, string password)> GetUserInDataBase()
+    {
+        var password = GetValidPassword();
+        var dbContext = CreateApiDbContextInMemory();
+        var user = GetValidUser(password: password);
+        await dbContext.Users.AddAsync(user);
+        await dbContext.SaveChangesAsync();
 
+        return (user, password);
+    }
 
     public DevFreelaDbContext CreateApiDbContext()
     {

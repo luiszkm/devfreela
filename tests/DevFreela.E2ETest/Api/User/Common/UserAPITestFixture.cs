@@ -9,7 +9,11 @@ public class UserE2EFixtureCollection : ICollectionFixture<UserAPITestFixture>
 }
 public class UserAPITestFixture : BaseFixture
 {
+    public Guid GetValidId()
+        => Guid.NewGuid();
 
+    public bool GetRandomBool()
+        => new Random().Next(0, 2) == 0;
 
     public UserUseCases.CreateUser.CreateUserInput GetUserInput()
         => new(
@@ -19,12 +23,18 @@ public class UserAPITestFixture : BaseFixture
             GetValidPassword(),
             0);
 
-    public string GetInvalidName()
-        => "a";
+
     public string GetInvalidPassword()
         => "1234567";
-    public string GetInvalidEmail()
-        => "aco";
+
+    public UserUseCases.UpdateUser.UpdateUserInput GetUpdateUserInput(Guid? userId = null, bool? userActive = null)
+        => new(
+            userId ?? GetValidId(),
+            GetValidName(),
+            GetValidEmail(),
+            GetValidBirthDate(),
+            userActive ?? GetRandomBool()
+            );
 
 
 }

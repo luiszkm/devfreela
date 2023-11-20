@@ -3,16 +3,18 @@
 using System.Net;
 using DevFreela.API.ApiModels.Response;
 using DevFreela.Application.UseCases.Project.Common;
+using DevFreela.Application.UseCases.Project.CreateProject;
 using DevFreela.Domain.Domain.Enums;
 using DevFreela.E2ETest.Api.Project.Common;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DevFreela.E2ETest.Api.Project;
-[Collection(nameof(CreateProjectTestFixture))]
+[Collection(nameof(ProjectAPITestFixture))]
 public class CreateProjectTest
 {
-    private readonly CreateProjectTestFixture _fixture;
-    public CreateProjectTest(CreateProjectTestFixture fixture)
+    private readonly ProjectAPITestFixture _fixture;
+    public CreateProjectTest(ProjectAPITestFixture fixture)
     {
         _fixture = fixture;
     }
@@ -43,6 +45,31 @@ public class CreateProjectTest
 
     }
 
+    [Theory(DisplayName = nameof(ThrowWhenInvalidInput))]
+    [Trait("E2E/API", "Project/Create - Endpoints")]
+    [MemberData(nameof(ProjectTestDataGenerator.GetInvalidProjectInputs),
+        MemberType = typeof(ProjectTestDataGenerator)
+    )]
+
+    public async Task ThrowWhenInvalidInput(CreateProjectInput inputModel)
+    {
+        var (user, password) = await _fixture.GetUserInDataBase();
+        var userAuthenticate = _fixture.ApiClient.AddAuthorizationHeader(user.Email, password);
+
+
+        userAuthenticate.Result.Should().BeTrue();
+        inputModel.IdClient = user.Id;
+
+        var (response, output) = await _fixture
+            .ApiClient.Post<ProblemDetails>("/projects", inputModel);
+
+        response!.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        response.Should().NotBeNull();
+        output!.Title.Should().Be("One or more validation errors occurred.");
+        output!.Status.Should().Be((int)HttpStatusCode.UnprocessableEntity);
+
+    }
+
 
     [Fact(DisplayName = nameof(ThrowWhenUserIsNotLoggedIn))]
     [Trait("E2E/API", "Project/Create - Endpoints")]
@@ -56,7 +83,7 @@ public class CreateProjectTest
         var (response, _) = await _fixture
             .ApiClient.Post<UnauthorizedAccessException>("/projects", inputModel);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response!.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         response.Should().NotBeNull();
 
     }

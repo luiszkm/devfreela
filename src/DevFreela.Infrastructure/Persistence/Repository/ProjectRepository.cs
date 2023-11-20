@@ -5,7 +5,6 @@ using DevFreela.Domain.Domain.Enums;
 using DevFreela.Domain.Domain.Repository;
 using DevFreela.Domain.Domain.seddwork.SearchbleRepository.cs;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
 
 namespace DevFreela.Infrastructure.Persistence.Repository;
 public class ProjectRepository : IProjectRepository

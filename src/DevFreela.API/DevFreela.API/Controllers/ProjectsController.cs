@@ -5,6 +5,7 @@ using DevFreela.Application.UseCases.Project.CreateProject;
 using DevFreela.Application.UseCases.Project.DeleteProject;
 using DevFreela.Application.UseCases.Project.GetProject;
 using DevFreela.Application.UseCases.Project.UpdateProject;
+using DevFreela.Domain.Domain.Entities;
 using DevFreela.Domain.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -53,8 +54,11 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
         await _mediator.Send(new DeleteProjectInput(id));
@@ -62,24 +66,34 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [Authorize]
+    [ProducesResponseType(typeof(ApiResponse<ProjectModelOutput>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
 
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateProjectInput inputModel)
     {
-        await _mediator.Send(inputModel);
-        return NoContent();
+        var project = await _mediator.Send(inputModel);
+        var response = new ApiResponse<ProjectModelOutput>(project);
+
+        return Ok(response);
     }
 
     [HttpPatch("{id:guid}")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
 
     public async Task<IActionResult> ChangeStatus([FromRoute] Guid id, [FromBody] ChangeStatusInputModel inputModel)
     {
         await _mediator.Send(inputModel);
         return NoContent();
     }
+
+
 
 
 }

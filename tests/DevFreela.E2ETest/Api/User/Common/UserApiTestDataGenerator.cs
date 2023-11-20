@@ -47,4 +47,41 @@ public class UserApiTestDataGenerator
         return invalidInputsList;
 
     }
+
+    public static IEnumerable<object[]> GetInvalidUpdateInputs()
+    {
+        var fixture = new UserAPITestFixture();
+        var invalidInputsList = new List<object[]>();
+        var totalInvalidCases = 3;
+
+        for (int i = 0; i < totalInvalidCases; i++)
+        {
+            switch (i % totalInvalidCases)
+            {
+                case 0:
+                    var input = fixture.GetUpdateUserInput();
+                    input.Email = fixture.GetInvalidName();
+                    invalidInputsList.Add(new object[]
+                    {
+                        input
+                    });
+                    break;
+                case 1:
+                    var input2 = fixture.GetUpdateUserInput();
+                    input2.Email = fixture.GetInvalidEmail();
+                    invalidInputsList.Add(new object[]
+                    {
+                        input2
+                    });
+                    break;
+
+
+                default:
+                    break;
+            }
+        }
+
+        return invalidInputsList;
+
+    }
 }

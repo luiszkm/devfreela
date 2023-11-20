@@ -1,6 +1,7 @@
 ﻿
 
 using DevFreela.Application.Exceptions;
+using DevFreela.Domain.Domain.Enums;
 using DevFreela.Domain.Domain.Repository;
 
 namespace DevFreela.Application.UseCases.Project.ChangeStatus;
@@ -17,10 +18,9 @@ public class ChangeStatus : IChangeStatus
     {
         var project = await _projectRepository.GetById(request.Id, cancellationToken);
         if (project == null)
-            throw new NotFoundException("Project not found");
+            throw new NotFoundException();
 
-        project.ChangeStatus((Domain.Domain.Enums.ProjectStatusEnum)request.Status);
-
+        project.ChangeStatus((ProjectStatusEnum)request.Status);
 
     }
 }

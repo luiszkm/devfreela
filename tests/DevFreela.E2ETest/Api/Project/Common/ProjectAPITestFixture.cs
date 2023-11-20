@@ -1,14 +1,15 @@
 ﻿
 
+using DevFreela.Application.UseCases.Project.UpdateProject;
 using DevFreela.E2ETest.Base;
 using DevFreela.Infrastructure.Persistence;
 
 namespace DevFreela.E2ETest.Api.Project.Common;
 
-[CollectionDefinition(nameof(CreateProjectTestFixture))]
+[CollectionDefinition(nameof(ProjectAPITestFixture))]
 
-public class CreateProjectTestFixtureCollection : ICollectionFixture<CreateProjectTestFixture> { }
-public class CreateProjectTestFixture : BaseFixture
+public class CreateProjectTestFixtureCollection : ICollectionFixture<ProjectAPITestFixture> { }
+public class ProjectAPITestFixture : BaseFixture
 {
     public string GetValidDescription()
         => Faker.Lorem.Paragraph();
@@ -36,14 +37,22 @@ public class CreateProjectTestFixture : BaseFixture
 
 
 
-    public async Task<(DomainEntity.User user, string password)> GetUserInDataBase()
+    public UpdateProjectInput GetUpdateProjectInputModel(Guid ProjectId)
+        => new(
+            ProjectId,
+            GetValidName(),
+            GetValidDescription(),
+            GetValidTotalCost());
+
+
+    public async Task<DomainEntity.Project> CreateProjectInDataBase(Guid userId)
     {
-        var password = GetValidPassword();
         var dbContext = CreateApiDbContextInMemory();
-        var user = GetValidUser(password: password);
-        await dbContext.Users.AddAsync(user);
+        var project = GetValidProject(userId);
+        await dbContext.Projects.AddAsync(project);
         await dbContext.SaveChangesAsync();
 
-        return (user, password);
+        return project;
     }
+
 }

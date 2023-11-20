@@ -18,9 +18,8 @@ public class GetUser : IGetUser
         var user = await _userRepository.GetById(request.Id, cancellationToken);
 
         if (user == null)
-        {
-            throw new NotFoundException("User not found");
-        }
+            throw new NotFoundException();
+
 
         return UserModelOutput.FromUser(user);
     }

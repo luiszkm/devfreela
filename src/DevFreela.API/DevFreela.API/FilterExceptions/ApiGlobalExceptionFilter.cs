@@ -27,7 +27,7 @@ public class ApiGlobalExceptionFilter : IExceptionFilter
         switch (exception)
         {
             case NotFoundException:
-                details.Title = "Not Found";
+                details.Title = "Aggregate NotFound";
                 details.Status = StatusCodes.Status404NotFound;
                 details.Type = "Not Found";
                 details.Detail = exception!.Message;

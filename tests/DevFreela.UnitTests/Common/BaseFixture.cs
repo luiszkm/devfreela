@@ -11,8 +11,20 @@ public class BaseFixture
         => Faker = new Faker("pt_BR");
     public Decimal GetRandomDecimal()
         => new Random().Next(1, 10000);
-    public bool GetRandomBoolean()
-        => new Random().NextDouble() < 0.5;
+
+    public Guid GetValidGuid()
+        => Guid.NewGuid();
+
+    public string GetValidDescription()
+        => Faker.Lorem.Paragraph();
+
+
+    public DomainEntity.Project CreateValidProject(Guid? ClientId = null)
+        => new DomainEntity.Project(
+            GetValidName(),
+            GetValidDescription(),
+            GetRandomDecimal(),
+            ClientId ?? GetValidGuid());
 
     public List<DomainEntity.User> GetListUsers(int total = 10)
     {

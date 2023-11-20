@@ -44,6 +44,70 @@ public class ApiClient
         return (response, output);
 
     }
+
+    public async Task<(HttpResponseMessage?, TOutput?)>
+        Put<TOutput>(
+            string route,
+            object payload
+        ) where TOutput : class
+    {
+        var payloadAsJson = JsonSerializer
+            .Serialize(payload, _defaultSerializeOptions);
+
+        var response = await _httpClient.PutAsync(route,
+            new StringContent(
+                payloadAsJson,
+                Encoding.UTF8,
+                "application/json"));
+        var output = await GetOutput<TOutput>(response);
+        if (output is null)
+            return (response, null);
+
+        return (response, output);
+
+    }
+
+    public async Task<(HttpResponseMessage?, TOutput?)>
+        Patch<TOutput>(
+            string route,
+            object payload
+        ) where TOutput : class
+    {
+        var payloadAsJson = JsonSerializer
+            .Serialize(payload, _defaultSerializeOptions);
+
+        var response = await _httpClient.PatchAsync(route,
+            new StringContent(
+                payloadAsJson,
+                Encoding.UTF8,
+                "application/json"));
+        var output = await GetOutput<TOutput>(response);
+        if (output is null)
+            return (response, null);
+
+        return (response, output);
+
+    }
+
+    public async Task<(HttpResponseMessage?, TOutput?)> Get<TOutput>(
+        string route,
+        object? queryStringParametersObject = null
+    ) where TOutput : class
+    {
+        var url = PrepareGetRoute(route, queryStringParametersObject);
+        var response = await _httpClient.GetAsync(url);
+        var output = await GetOutput<TOutput>(response);
+        return (response, output);
+    }
+    public async Task<(HttpResponseMessage?, TOutput?)> Delete<TOutput>(
+        string route
+    ) where TOutput : class
+    {
+        var response = await _httpClient.DeleteAsync(route);
+        var output = await GetOutput<TOutput>(response);
+        return (response, output);
+    }
+
     public async Task<bool> AddAuthorizationHeader(string email, string pwd)
     {
         var accessToken = await GetTokenAuthenticate(email, pwd);

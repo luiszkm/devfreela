@@ -62,6 +62,12 @@ public class UserApplicationTestFixture : BaseFixture
             GetValidPassword(),
             role);
 
+    public UserUseCase.UpdateUser.UpdateUserInput GetValidUpdateInput(Guid userId)
+        => new(
+            userId,
+            GetValidName(),
+            GetValidEmail(),
+            GetValidBirthDate());
 
 
     public Mock<IUserRepository> GetUserRepositoryMock()

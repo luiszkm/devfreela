@@ -6,7 +6,6 @@ using DevFreela.Domain.Domain.Entities.Models;
 namespace DevFreela.Domain.Domain.Entities;
 public class User : AggregateRoot
 {
-
     public User(
         string name,
         string email,
@@ -28,8 +27,6 @@ public class User : AggregateRoot
         FreelanceProjects = new List<Project>();
         OwnedProjects = new List<Project>();
         Comments = new List<ProjectComment>();
-
-
 
     }
 
@@ -74,6 +71,77 @@ public class User : AggregateRoot
         Validate();
 
     }
+
+
+
+    public void AddSkill(UserSkills skill)
+    {
+        var skillAlreadyExists = Skills.Any(s => s.IdSkill == skill.IdSkill);
+        if (skillAlreadyExists) return;
+        Skills.Add(skill);
+    }
+
+    public void RemoveSkill(UserSkills skill)
+    {
+
+        var skillAlreadyExists = Skills.Any(s => s.IdSkill == skill.IdSkill);
+        if (!skillAlreadyExists) return;
+        Skills.Remove(skill);
+    }
+
+    public void AddOwnedProject(Project project)
+    {
+        var projectAlreadyExists = OwnedProjects.Any(p => p.Id == project.Id);
+        if (projectAlreadyExists) return;
+        OwnedProjects.Add(project);
+    }
+
+    public void RemoveOwnedProject(Project project)
+    {
+        var projectAlreadyExists = OwnedProjects.Any(p => p.Id == project.Id);
+        if (!projectAlreadyExists) return;
+        OwnedProjects.Remove(project);
+    }
+
+    public void AddFreelanceProject(Project project)
+    {
+        var projectAlreadyExists = FreelanceProjects.Any(p => p.Id == project.Id);
+        if (projectAlreadyExists) return;
+        FreelanceProjects.Add(project);
+    }
+
+    public void RemoveFreelanceProject(Project project)
+    {
+        var projectAlreadyExists = FreelanceProjects.Any(p => p.Id == project.Id);
+        if (!projectAlreadyExists) return;
+        FreelanceProjects.Remove(project);
+    }
+
+    public void AddComment(ProjectComment comment)
+    {
+        var commentAlreadyExists = Comments.Any(c => c.Id == comment.Id);
+        if (commentAlreadyExists) return;
+        Comments.Add(comment);
+    }
+
+    public void RemoveComment(ProjectComment comment)
+    {
+        var commentAlreadyExists = Comments.Any(c => c.Id == comment.Id);
+        if (!commentAlreadyExists) return;
+        Comments.Remove(comment);
+    }
+
+    public void Inactive()
+    {
+        Active = false;
+    }
+
+    public void ActiveUser()
+    {
+        Active = true;
+    }
+
+
     private void Validate()
     {
         DomainValidation.NotNullOrEmpty(Name, nameof(Name));

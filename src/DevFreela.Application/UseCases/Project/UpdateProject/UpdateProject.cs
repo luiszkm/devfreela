@@ -1,4 +1,5 @@
 ﻿
+using DevFreela.Application.Exceptions;
 using DevFreela.Application.UseCases.Project.Common;
 using DevFreela.Domain.Domain.Repository;
 
@@ -19,9 +20,8 @@ public class UpdateProject : IUpdateProject
         var project = await _projectRepository.GetById(request.Id, cancellationToken);
 
         if (project == null)
-        {
-            return null;
-        }
+            throw new NotFoundException();
+
 
         project.Update(request.Title, request.Description, request.TotalCost);
 
