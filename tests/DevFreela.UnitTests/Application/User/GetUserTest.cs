@@ -18,9 +18,9 @@ public class GetUserTest
         _fixture = fixture;
     }
 
-    [Fact(DisplayName = nameof(UpdateUserApplication))]
-    [Trait("Application", "Update - User")]
-    public async Task UpdateUserApplication()
+    [Fact(DisplayName = nameof(GetUserApplication))]
+    [Trait("Application", "Get - User")]
+    public async Task GetUserApplication()
     {
         var repositoryMock = _fixture.GetUserRepositoryMock();
         var user = _fixture.GetValidUser();
@@ -50,7 +50,7 @@ public class GetUserTest
     }
 
     [Fact(DisplayName = nameof(ThrowWhenUserNotFound))]
-    [Trait("Application", "Update - User")]
+    [Trait("Application", "Get - User")]
     public async Task ThrowWhenUserNotFound()
     {
         var repositoryMock = _fixture.GetUserRepositoryMock();

@@ -61,6 +61,17 @@ public class BaseFixture
     public DomainEntity.Skill GetValidSkill()
         => new(GetValidName());
 
+    public List<DomainEntity.Skill> GetValidSkillList()
+    {
+        var skills = new List<DomainEntity.Skill>();
+        for (int i = 0; i < 5; i++)
+        {
+            skills.Add(new DomainEntity.Skill(
+                Faker.Company.Random.Words()));
+        }
+
+        return skills;
+    }
     public DomainEntity.ProjectComment GetValidProjectComment(
         Guid? projectId = null,
         Guid? userId = null)

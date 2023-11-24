@@ -1,6 +1,7 @@
 ﻿
 
 using Bogus;
+using DevFreela.Domain.Domain.Enums;
 using DevFreela.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,17 +17,7 @@ public class BaseFixture
     public bool GetRandomBoolean()
         => new Random().NextDouble() < 0.5;
 
-    public List<Guid> GetListGuid(int total = 5)
-    {
-        var list = new List<Guid>();
 
-        for (int i = 0; i < total; i++)
-        {
-            list.Add(Guid.NewGuid());
-        }
-
-        return list;
-    }
 
     public string GetValidEmail()
         => Faker.Internet.Email().ToLower();
@@ -43,6 +34,31 @@ public class BaseFixture
     public string GetValidDescription()
         => Faker.Lorem.Paragraph();
 
+    public DomainEntity.User GetValidUser()
+        => new(
+            GetValidName(),
+            GetValidName(),
+            GetValidPassword(),
+            GetValidBirthDate(),
+            UserRole.Client);
+
+    public List<DomainEntity.Skill> GetValidSkillList()
+    {
+        var skills = new List<DomainEntity.Skill>();
+        for (int i = 0; i < 5; i++)
+        {
+            skills.Add(new DomainEntity.Skill(
+                Faker.Company.Random.Words()));
+        }
+
+        return skills;
+    }
+
+    public void ClearDatabase()
+    {
+        using var dbContext = CreateDbContext();
+        dbContext.Database.EnsureDeleted();
+    }
 
     public DevFreelaDbContext CreateDbContext(bool preserverData = false)
     {

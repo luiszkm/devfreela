@@ -48,7 +48,17 @@ public class BaseFixture
     public DateTime GetValidBirthDate()
         => Faker.Date.Past(18);
 
+    public List<DomainEntity.Skill> GetValidSkillList()
+    {
+        var skills = new List<DomainEntity.Skill>();
+        for (int i = 0; i < 5; i++)
+        {
+            skills.Add(new DomainEntity.Skill(
+                Faker.Company.Random.Words()));
+        }
 
+        return skills;
+    }
     private string GetPasswordHash(string password)
     {
         var sha256 = SHA256.Create();

@@ -5,6 +5,7 @@ using DevFreela.Application.UseCases.User.Common;
 using DevFreela.Application.UseCases.User.CreateUser;
 using DevFreela.Application.UseCases.User.GetUser;
 using DevFreela.Application.UseCases.User.UpdateUser;
+using DevFreela.Application.UseCases.User.UserSkill;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,29 @@ public class UsersController : ControllerBase
         return CreatedAtAction(
             nameof(Create),
             new { id = output.Id }, response);
+
+
     }
+
+    [HttpPost("/users/skills")]
+    [Authorize]
+    [ProducesResponseType(typeof(ApiResponse<UserModelOutput>), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+
+    public async Task<IActionResult>
+        InsertSkill([FromBody] UserSkillInput inputModel)
+    {
+
+
+        var output = await _mediator.Send(inputModel);
+        var response = new ApiResponse<UserModelOutput>(output);
+
+        return CreatedAtAction(
+            nameof(Create),
+            new { id = output.Id }, response);
+    }
+
 
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ApiResponse<UserModelOutput>), StatusCodes.Status200OK)]

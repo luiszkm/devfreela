@@ -1,11 +1,12 @@
 ﻿using DevFreela.Application.Exceptions;
+using DevFreela.Domain.Domain.Entities.Models;
 using DevFreela.Infrastructure.Persistence.Repository;
 
 namespace DevFreela.IntegrationTest.Infra.Repositories.User;
 
 
 [Collection(nameof(UserRepositoryTestFixture))]
-public class UserRepositoryTest
+public class UserRepositoryTest : IDisposable
 {
     private readonly UserRepositoryTestFixture _fixture;
 
@@ -24,19 +25,11 @@ public class UserRepositoryTest
         var userRepository = new UserRepository(dbContext);
 
         await userRepository.Create(user, CancellationToken.None);
-        await dbContext.SaveChangesAsync(CancellationToken.None);
 
-        var userInserted = await userRepository.GetById(user.Id, CancellationToken.None);
+        dbContext.Users.Should().Contain(user);
 
-        dbContext.Users.Should().Contain(userInserted);
-
-        userInserted.Should().NotBeNull();
-        userInserted.Name.Should().Be(user.Name);
-        userInserted.Email.Should().Be(user.Email);
-        userInserted.BirthDate.Should().Be(user.BirthDate);
-        userInserted.CreatedAt.Should().Be(user.CreatedAt);
-        userInserted.Active.Should().Be(user.Active);
     }
+
 
     [Fact(DisplayName = nameof(ThrowWhenUserExists))]
     [Trait("Infra", "UserRepository - Repository")]
@@ -76,6 +69,45 @@ public class UserRepositoryTest
         userFound.BirthDate.Should().Be(user.BirthDate);
         userFound.CreatedAt.Should().Be(user.CreatedAt);
         userFound.Active.Should().Be(user.Active);
+
+    }
+
+    [Fact(DisplayName = nameof(GetUserWithSkill))]
+    [Trait("Infra", "UserRepository - Repository")]
+    public async Task GetUserWithSkill()
+    {
+        var dbContext = _fixture.CreateDbContext();
+        var userExample = _fixture.GetValidUser();
+        var skills = _fixture.GetValidSkillList();
+
+        await dbContext.Users.AddRangeAsync(userExample);
+        await dbContext.Skills.AddRangeAsync(skills);
+
+        foreach (var skill in skills)
+        {
+            await dbContext.UserSkills.AddAsync(new UserSkills(userExample.Id, skill.Id));
+
+        }
+
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+
+        var userRepository = new UserRepository(dbContext);
+
+        var userFound = await userRepository.GetById(userExample.Id, CancellationToken.None);
+
+        dbContext.UserSkills.Should().NotBeEmpty();
+        dbContext.UserSkills.Should().HaveCount(skills.Count);
+
+        userFound.Should().NotBeNull();
+
+        userFound.Skills.Should().NotBeEmpty();
+        userFound.Skills.Should().HaveCount(skills.Count);
+
+        userFound.Name.Should().Be(userExample.Name);
+        userFound.Email.Should().Be(userExample.Email);
+        userFound.BirthDate.Should().Be(userExample.BirthDate);
+        userFound.CreatedAt.Should().Be(userExample.CreatedAt);
+        userFound.Active.Should().Be(userExample.Active);
 
     }
 
@@ -193,9 +225,34 @@ public class UserRepositoryTest
 
         var userRepository = new UserRepository(dbContext);
 
-        userRepository.Delete(listUsers[3], CancellationToken.None);
+        userRepository!.Delete(listUsers[3], CancellationToken.None);
 
         dbContext.Users.Should().NotContain(listUsers[3]);
 
+    }
+
+    [Fact(DisplayName = nameof(AddUserSkill))]
+    [Trait("Infra", "UserRepository - Repository")]
+    public async Task AddUserSkill()
+    {
+        var dbContext = _fixture.CreateDbContext();
+        var userExample = _fixture.GetValidUser();
+        await dbContext.Users.AddAsync(userExample);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        var skills = _fixture.GetValidSkillList();
+
+        var userRepository = new UserRepository(dbContext);
+
+        var user = await userRepository.AddSkill(userExample.Id, skills);
+
+        dbContext.UserSkills.Should().NotBeEmpty();
+        dbContext.UserSkills.Should().HaveCount(skills.Count);
+
+        user!.Skills.Should().NotBeEmpty();
+        user!.Skills.Should().HaveCount(skills.Count);
+    }
+    public void Dispose()
+    {
+        _fixture.ClearDatabase();
     }
 }

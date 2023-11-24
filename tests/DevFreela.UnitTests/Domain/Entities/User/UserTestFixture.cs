@@ -24,7 +24,7 @@ public class UserTestFixture : BaseFixture
     => Faker.Person.DateOfBirth;
 
     public DomainEntity.User CreateValidUser()
-    => new DomainEntity.User(
+    => new(
             GetValidName(),
             GetValidName(),
             GetValidPassword(),
@@ -32,8 +32,22 @@ public class UserTestFixture : BaseFixture
             UserRole.Client
     );
 
-    public DomainEntity.Models.UserSkills CreateValidSkill()
-    => new(GetValidGuid(), GetValidGuid());
+
+
+
+    public List<DomainEntity.Skill> GetValidSkillList()
+    {
+        var skills = new List<DomainEntity.Skill>();
+        for (int i = 0; i < 5; i++)
+        {
+            skills.Add(new DomainEntity.Skill(
+                Faker.Company.Random.Words()));
+        }
+
+        return skills;
+    }
+
+
 
 
 }

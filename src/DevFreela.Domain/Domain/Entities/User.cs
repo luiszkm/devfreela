@@ -60,7 +60,6 @@ public class User : AggregateRoot
 
     public void UpdatePassword(string currentPassword, string newPassword)
     {
-
         var verifyOldPassword =
                 newPassword == currentPassword ||
                 OldPassword == newPassword;
@@ -69,25 +68,21 @@ public class User : AggregateRoot
         OldPassword = Password;
         Password = newPassword;
         Validate();
-
     }
 
 
 
-    public void AddSkill(UserSkills skill)
+    public void AddSkills(List<Skill> skills)
     {
-        var skillAlreadyExists = Skills.Any(s => s.IdSkill == skill.IdSkill);
-        if (skillAlreadyExists) return;
-        Skills.Add(skill);
+        Skills.Clear();
+        foreach (var skill in skills)
+        {
+            var userSkill = new UserSkills(Id, skill.Id);
+            Skills.Add(userSkill);
+        }
     }
 
-    public void RemoveSkill(UserSkills skill)
-    {
 
-        var skillAlreadyExists = Skills.Any(s => s.IdSkill == skill.IdSkill);
-        if (!skillAlreadyExists) return;
-        Skills.Remove(skill);
-    }
 
     public void AddOwnedProject(Project project)
     {
@@ -96,12 +91,7 @@ public class User : AggregateRoot
         OwnedProjects.Add(project);
     }
 
-    public void RemoveOwnedProject(Project project)
-    {
-        var projectAlreadyExists = OwnedProjects.Any(p => p.Id == project.Id);
-        if (!projectAlreadyExists) return;
-        OwnedProjects.Remove(project);
-    }
+
 
     public void AddFreelanceProject(Project project)
     {
@@ -110,12 +100,7 @@ public class User : AggregateRoot
         FreelanceProjects.Add(project);
     }
 
-    public void RemoveFreelanceProject(Project project)
-    {
-        var projectAlreadyExists = FreelanceProjects.Any(p => p.Id == project.Id);
-        if (!projectAlreadyExists) return;
-        FreelanceProjects.Remove(project);
-    }
+
 
     public void AddComment(ProjectComment comment)
     {

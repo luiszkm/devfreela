@@ -15,7 +15,6 @@
     <Folder Include="UseCases\Skill\UpdateSkill\" />
     <Folder Include="UseCases\Skill\DeleteSkill\" />
     <Folder Include="UseCases\Skill\CreateSkill\" />
-    <Folder Include="UseCases\User\SearchUser\" />
   </ItemGroup>
 
   <ItemGroup>
