@@ -45,6 +45,33 @@ public class GetUserTest
         output!.Data!.BirthDate.Should().Be(user.BirthDate);
 
     }
+
+    [Fact(DisplayName = nameof(GetUserWithSkills))]
+    [Trait("E2E/API", "User/Get - Endpoints")]
+
+    public async Task GetUserWithSkills()
+    {
+        var (user, password) = await _fixture.GetUserInDataBase(withSkills: true);
+        var userAuthenticate = _fixture.ApiClient.AddAuthorizationHeader(user.Email, password);
+        userAuthenticate.Result.Should().BeTrue();
+
+        var inputModel = new GetUserInput(user.Id);
+
+        var (response, output) = await _fixture
+            .ApiClient.Get<ApiResponse
+                <UserModelOutput>>($"/users/{user.Id}", inputModel);
+        response!.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Should().NotBeNull();
+
+        output!.Data.Should().NotBeNull();
+        output!.Data!.Id.Should().NotBeEmpty();
+        output!.Data!.Name.Should().Be(user.Name);
+        output!.Data!.Email.Should().Be(user.Email);
+        output!.Data!.BirthDate.Should().Be(user.BirthDate);
+
+        output!.Data!.Skills.Should().NotBeNullOrEmpty();
+
+    }
     [Fact(DisplayName = nameof(ThrowWhenNotFoundUser))]
     [Trait("E2E/API", "User/Get - Endpoints")]
 

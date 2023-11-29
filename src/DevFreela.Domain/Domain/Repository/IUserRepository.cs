@@ -11,4 +11,6 @@ public interface IUserRepository : IGenericRepository<User>
 
     Task<User?> AddSkill(Guid userId, List<Skill> skill);
 
+    Task<List<UserSkills>>? GetUserWithSkills(Guid id);
+
 }

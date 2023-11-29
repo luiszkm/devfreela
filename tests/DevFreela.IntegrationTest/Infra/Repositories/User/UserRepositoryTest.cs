@@ -91,7 +91,7 @@ public class UserRepositoryTest : IDisposable
 
         await dbContext.SaveChangesAsync(CancellationToken.None);
 
-        var userRepository = new UserRepository(dbContext);
+        var userRepository = new UserRepository(_fixture.CreateDbContext(true));
 
         var userFound = await userRepository.GetById(userExample.Id, CancellationToken.None);
 

@@ -16,6 +16,7 @@ public class DevFreelaDbContext : DbContext
         Set<User>();
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Skill> Skills => Set<Skill>();
+
     //public DbSet<ProjectComment> ProjectComment =>Set<ProjectComment>();
 
     //public DbSet<FreelancersInterested> FreelancersInterested => Set<FreelancersInterested>();

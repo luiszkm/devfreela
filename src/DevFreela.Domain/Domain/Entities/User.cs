@@ -74,7 +74,10 @@ public class User : AggregateRoot
 
     public void AddSkills(List<Skill> skills)
     {
+        var userSkills = skills.Count;
+        if (skills == null) return;
         Skills.Clear();
+
         foreach (var skill in skills)
         {
             var userSkill = new UserSkills(Id, skill.Id);

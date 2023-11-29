@@ -20,4 +20,10 @@ public class SkillRepository : ISkillRepository
     {
         return _skills.ToList();
     }
+
+    public Skill GetById(Guid id)
+    {
+        var skill = _skills.SingleOrDefault(s => s.Id == id);
+        return skill;
+    }
 }

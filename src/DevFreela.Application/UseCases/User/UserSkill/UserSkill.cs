@@ -22,6 +22,6 @@ public class UserSkill : IRequestHandler<UserSkillInput, UserModelOutput>
         if (user == null)
             throw new NotFoundException();
         user.AddSkills(request.Skills);
-        return UserModelOutput.FromUser(user);
+        return UserModelOutput.FromUser(user, request.Skills);
     }
 }

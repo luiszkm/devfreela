@@ -85,13 +85,27 @@ public class BaseFixture
                 GetValidBirthDate(),
                 role);
 
-    public async Task<(DomainEntity.User user, string password)> GetUserInDataBase()
+    public async Task<(DomainEntity.User user, string password)> GetUserInDataBase(bool? withSkills = false)
     {
+
         var password = GetValidPassword();
         var dbContext = CreateApiDbContextInMemory();
         var user = GetValidUser(password: password);
         await dbContext.Users.AddAsync(user);
+
+        if (withSkills == true)
+        {
+            var skillList = GetValidSkillList();
+            dbContext.Skills.AddRange(skillList);
+            foreach (var skill in skillList)
+            {
+                var userSkill = new DomainEntity.Models.UserSkills(user.Id, skill.Id);
+                await dbContext.UserSkills.AddAsync(userSkill);
+            }
+        };
         await dbContext.SaveChangesAsync();
+        var skills = await dbContext.Skills.ToListAsync();
+        var userSkills = await dbContext.UserSkills.ToListAsync();
 
         return (user, password);
     }

@@ -3,7 +3,6 @@ using DevFreela.Domain.Domain.Entities;
 using DevFreela.Domain.Domain.Entities.Models;
 using DevFreela.Domain.Domain.Repository;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
 
 namespace DevFreela.Infrastructure.Persistence.Repository;
 public class UserRepository : IUserRepository
@@ -17,6 +16,7 @@ public class UserRepository : IUserRepository
     private DbSet<User> _user => _dbContext.Set<User>();
     private DbSet<UserSkills> _userSkills => _dbContext.Set<UserSkills>();
 
+    private DbSet<Skill> _skills => _dbContext.Set<Skill>();
 
     public async Task Create(User aggregate, CancellationToken cancellationToken)
     {
@@ -31,18 +31,20 @@ public class UserRepository : IUserRepository
             .SingleOrDefaultAsync(u => u.Id == id, cancellationToken);
         if (user == null)
             throw new NotFoundException();
+
+        var skillsList = new List<Skill>();
+
         var userSkills = await _userSkills.AsNoTracking()
             .Where(u => u.IdUser == id)
             .ToListAsync(cancellationToken);
 
 
-
-        var skillsList = new List<Skill>();
-        foreach (var item in userSkills)
+        foreach (var skill in userSkills)
         {
-            var skill = await _dbContext.Skills.AsNoTracking()
-                .SingleOrDefaultAsync(s => s.Id == item.IdSkill, cancellationToken);
-            skillsList.Add(skill);
+            var skills = await _skills.AsNoTracking()
+                .Where(s => s.Id == skill.IdSkill)
+                .ToListAsync(cancellationToken);
+            skillsList.AddRange(skills);
         }
         user.AddSkills(skillsList);
 
@@ -84,6 +86,18 @@ public class UserRepository : IUserRepository
         if (user == null)
             throw new NotFoundException();
 
+        if (skill == null)
+            throw new BadRequestException("Skill is null");
+
+        if (skill != null && skill.Count > 0)
+        {
+            var userSkills = await _userSkills.AsNoTracking()
+                .Where(u => u.IdUser == userId)
+                .ToListAsync();
+            _userSkills.RemoveRange(userSkills);
+        }
+
+
         foreach (var item in skill)
         {
             var userSkill = new UserSkills(userId, item.Id);
@@ -93,5 +107,14 @@ public class UserRepository : IUserRepository
         await _dbContext.SaveChangesAsync();
         user.AddSkills(skill);
         return user;
+    }
+
+    public Task<List<UserSkills>?> GetUserWithSkills(Guid id)
+    {
+        var userSkills = _userSkills.AsNoTracking()
+             .Where(u => u.IdUser == id)
+             .ToListAsync();
+
+        return userSkills;
     }
 }

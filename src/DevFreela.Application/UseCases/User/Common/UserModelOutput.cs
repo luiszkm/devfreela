@@ -10,7 +10,7 @@ public class UserModelOutput
         string name,
         string email,
         DateTime birthDate,
-        List<DomainEntity.Models.UserSkills> skills)
+        List<DomainEntity.Skill> skills)
     {
         Id = id;
         Name = name;
@@ -24,11 +24,13 @@ public class UserModelOutput
     public string Name { get; private set; }
     public string Email { get; private set; }
     public DateTime BirthDate { get; private set; }
-    public List<DomainEntity.Models.UserSkills> Skills { get; private set; }
+    public List<DomainEntity.Skill> Skills { get; private set; }
 
 
-    public static UserModelOutput FromUser(DomainEntity.User user)
+    public static UserModelOutput FromUser(
+        DomainEntity.User user,
+        List<DomainEntity.Skill>? skills = null)
     {
-        return new UserModelOutput(user.Id, user.Name, user.Email, user.BirthDate, user.Skills);
+        return new UserModelOutput(user.Id, user.Name, user.Email, user.BirthDate, skills);
     }
 }

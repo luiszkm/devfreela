@@ -70,8 +70,20 @@ public class UserApplicationTestFixture : BaseFixture
             GetValidBirthDate());
 
 
+    public List<DomainEntity.Models.UserSkills> GetValidUserSkills(Guid userId, Guid skillId)
+    {
+        var userSkills = new LinkedList<DomainEntity.Models.UserSkills>();
+        userSkills.AddLast(new DomainEntity.Models.UserSkills(userId, skillId));
+        return userSkills.ToList();
+
+    }
     public Mock<IUserRepository> GetUserRepositoryMock()
         => new();
+
+    public Mock<ISkillRepository> GetSkillsRepositoryMock()
+        => new();
+
+
 
     public Mock<IUserRepository> GetUserRepositoryMockWithUser(string email, string? password = null)
     {

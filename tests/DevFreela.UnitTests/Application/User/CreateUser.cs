@@ -45,8 +45,7 @@ public class CreateUser
         output.Email.Should().Be(input.Email);
         output.Id.Should().NotBeEmpty();
         output.BirthDate.Should().Be(input.BirthDate);
-        output.Skills.Should().HaveCount(0);
-
+        output.Skills.Should().BeNullOrEmpty();
 
 
 
