@@ -9,6 +9,13 @@ public class UserE2EFixtureCollection : ICollectionFixture<UserAPITestFixture>
 }
 public class UserAPITestFixture : BaseFixture
 {
+    public UserPersistence Persistence;
+
+    public UserAPITestFixture() : base()
+    {
+        Persistence = new UserPersistence(CreateApiDbContextInMemory());
+    }
+
     public Guid GetValidId()
         => Guid.NewGuid();
 
@@ -25,9 +32,10 @@ public class UserAPITestFixture : BaseFixture
 
 
     public string GetInvalidPassword()
-        => "1234567";
+        => Faker.Internet.Password(5);
 
-    public UserUseCases.UpdateUser.UpdateUserInput GetUpdateUserInput(Guid? userId = null, bool? userActive = null)
+    public UserUseCases.UpdateUser.UpdateUserInput
+        GetUpdateUserInput(Guid? userId = null, bool? userActive = null)
         => new(
             userId ?? GetValidId(),
             GetValidName(),

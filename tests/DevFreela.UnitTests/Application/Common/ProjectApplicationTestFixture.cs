@@ -33,6 +33,8 @@ public class ProjectApplicationTestFixture : BaseFixture
     public Mock<IProjectRepository> GetProjectRepositoryMock()
         => new();
 
+    public Mock<IUserRepository> GetUserRepositoryMock()
+        => new();
     public Mock<IProjectRepository> GetUserRepositoryMockWithProject()
     {
         var mock = GetProjectRepositoryMock();

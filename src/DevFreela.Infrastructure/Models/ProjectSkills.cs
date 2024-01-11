@@ -2,7 +2,7 @@
 
 
 namespace DevFreela.Infrastructure.Models;
-internal class ProjectSkills
+public class ProjectSkills
 {
     public ProjectSkills(Guid idProject, Guid idSkill)
     {

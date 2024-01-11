@@ -2,6 +2,7 @@
 using DevFreela.Domain.Domain.Validation;
 using DevFreela.Domain.Domain.Enums;
 using DevFreela.Domain.Domain.Entities.Models;
+using DevFreela.Domain.Domain.Exceptions;
 
 namespace DevFreela.Domain.Domain.Entities;
 public class User : AggregateRoot
@@ -27,14 +28,14 @@ public class User : AggregateRoot
         FreelanceProjects = new List<Project>();
         OwnedProjects = new List<Project>();
         Comments = new List<ProjectComment>();
-
+        OldPassword = password;
     }
 
     public string Name { get; private set; }
     public string Email { get; private set; }
     public DateTime BirthDate { get; private set; }
     public string Password { get; private set; }
-    private string OldPassword { get; set; }
+    public string OldPassword { get; set; }
     public UserRole Role { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
@@ -60,10 +61,13 @@ public class User : AggregateRoot
 
     public void UpdatePassword(string currentPassword, string newPassword)
     {
+        if (currentPassword != Password) throw new EntityValidationExceptions("A senha atual não confere");
+
         var verifyOldPassword =
                 newPassword == currentPassword ||
                 OldPassword == newPassword;
-        if (verifyOldPassword) return;
+        if (verifyOldPassword) throw new EntityValidationExceptions("A nova senha não pode ser igual a anterio");
+
 
         OldPassword = Password;
         Password = newPassword;

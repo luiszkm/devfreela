@@ -48,6 +48,12 @@ public class BaseFixture
     public DateTime GetValidBirthDate()
         => Faker.Date.Past(18);
 
+    public string GetValidDescription()
+        => Faker.Lorem.Paragraph();
+
+    public decimal GetValidTotalCost()
+        => Faker.Random.Decimal(100, 1000);
+
     public List<DomainEntity.Skill> GetValidSkillList()
     {
         var skills = new List<DomainEntity.Skill>();
@@ -59,7 +65,7 @@ public class BaseFixture
 
         return skills;
     }
-    private string GetPasswordHash(string password)
+    public string GetPasswordHash(string password)
     {
         var sha256 = SHA256.Create();
         var bytes = Encoding.UTF8.GetBytes(password);
@@ -85,7 +91,8 @@ public class BaseFixture
                 GetValidBirthDate(),
                 role);
 
-    public async Task<(DomainEntity.User user, string password)> GetUserInDataBase(bool? withSkills = false)
+    public async Task<(DomainEntity.User user, string password)>
+        GetUserInDataBase(bool? withSkills = false)
     {
 
         var password = GetValidPassword();
@@ -104,11 +111,30 @@ public class BaseFixture
             }
         };
         await dbContext.SaveChangesAsync();
-        var skills = await dbContext.Skills.ToListAsync();
-        var userSkills = await dbContext.UserSkills.ToListAsync();
 
         return (user, password);
     }
+
+
+
+    public async Task<DomainEntity.Project> GetProjectInDataBase(Guid userId)
+    {
+        var dbContext = CreateApiDbContextInMemory();
+        var project = new DomainEntity.Project(
+                       GetValidName(),
+                       GetValidDescription(),
+                       GetValidTotalCost(),
+                       userId);
+
+        var userOwnedProject = new Models.UserOwnedProjects(project.Id, userId);
+        await dbContext.UserOwnedProjects.AddAsync(userOwnedProject);
+        await dbContext.Projects.AddAsync(project);
+
+        await dbContext.SaveChangesAsync();
+
+        return project;
+    }
+
 
     public DevFreelaDbContext CreateApiDbContext()
     {
@@ -133,5 +159,11 @@ public class BaseFixture
             context.Database.EnsureCreated();
 
         return context;
+    }
+
+    public void ClearDatabase()
+    {
+        using var dbContext = CreateApiDbContextInMemory();
+        dbContext.Database.EnsureDeleted();
     }
 }

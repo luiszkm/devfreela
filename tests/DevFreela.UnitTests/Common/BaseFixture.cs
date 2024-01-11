@@ -87,12 +87,7 @@ public class BaseFixture
             projectId ?? Guid.NewGuid(),
             skillId ?? Guid.NewGuid());
 
-    public DomainEntity.Models.UserSkills GetValidUserSkill(
-        Guid? projectId = null,
-        Guid? skillId = null)
-        => new(
-            projectId ?? Guid.NewGuid(),
-            skillId ?? Guid.NewGuid());
+
 
 
 }

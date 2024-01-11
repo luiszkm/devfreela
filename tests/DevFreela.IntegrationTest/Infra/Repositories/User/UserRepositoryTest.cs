@@ -1,5 +1,7 @@
 ﻿using DevFreela.Application.Exceptions;
+using DevFreela.Application.UseCases.User.UpdatePassword;
 using DevFreela.Domain.Domain.Entities.Models;
+using DevFreela.Infrastructure.Models;
 using DevFreela.Infrastructure.Persistence.Repository;
 
 namespace DevFreela.IntegrationTest.Infra.Repositories.User;
@@ -110,7 +112,31 @@ public class UserRepositoryTest : IDisposable
         userFound.Active.Should().Be(userExample.Active);
 
     }
+    [Fact(DisplayName = nameof(GetUserWithOwnedProjects))]
+    [Trait("Infra", "UserRepository - Repository")]
+    public async Task GetUserWithOwnedProjects()
+    {
+        var dbContext = _fixture.CreateDbContext();
+        var user = _fixture.GetValidUser();
+        var project = _fixture.GetValidProject(user.Id);
+        await dbContext.Users.AddAsync(user);
+        await dbContext.Projects.AddRangeAsync(project);
+        await dbContext.UserOwnedProjects.AddAsync(new UserOwnedProjects(project.Id, user.Id));
+        await dbContext.SaveChangesAsync(CancellationToken.None);
 
+        var userRepository = new UserRepository(dbContext);
+        var userFound = await userRepository.GetById(user.Id, CancellationToken.None);
+
+        userFound.Should().NotBeNull();
+        userFound.Name.Should().Be(user.Name);
+        userFound.Email.Should().Be(user.Email);
+        userFound.BirthDate.Should().Be(user.BirthDate);
+        userFound.CreatedAt.Should().Be(user.CreatedAt);
+        userFound.Active.Should().Be(user.Active);
+        userFound.OwnedProjects.Should().NotBeNullOrEmpty();
+        userFound.OwnedProjects.Should().HaveCount(1);
+
+    }
 
     [Fact(DisplayName = nameof(GetUserByEmail))]
     [Trait("Infra", "UserRepository - Repository")]
@@ -186,29 +212,30 @@ public class UserRepositoryTest : IDisposable
     [Trait("Infra", "UserRepository - Repository")]
     public async Task UpdateUserPassword()
     {
+        var password = _fixture.GetValidPassword();
+        var user = _fixture.GetValidUser(password: password);
         var dbContext = _fixture.CreateDbContext();
         var listUsers = _fixture.GetExampleUsersList();
-        var userUpdated = _fixture.GetValidUser();
-        var newPassword = "DevFreela@123";
+
         await dbContext.Users.AddRangeAsync(listUsers);
+        await dbContext.Users.AddAsync(user);
         await dbContext.SaveChangesAsync(CancellationToken.None);
 
+        var newPassword = "DevFreela@123";
         var userRepository = new UserRepository(dbContext);
 
-        listUsers[3].UpdatePassword(
-            userUpdated.Password,
-            newPassword);
+        await userRepository.UpdatePassword(user.Id, password, newPassword);
 
-        await userRepository.Update(listUsers[3], CancellationToken.None);
-        var userToUpdate = await userRepository.GetById(listUsers[3].Id, CancellationToken.None);
+        var userToUpdate = await userRepository.GetById(user.Id, CancellationToken.None);
 
         userToUpdate.Should().NotBeNull();
-        userToUpdate.Name.Should().Be(listUsers[3].Name);
-        userToUpdate.Email.Should().Be(listUsers[3].Email);
-        userToUpdate.BirthDate.Should().Be(listUsers[3].BirthDate);
-        userToUpdate.CreatedAt.Should().Be(listUsers[3].CreatedAt);
-        userToUpdate.Active.Should().Be(listUsers[3].Active);
-        userToUpdate.Password.Should().Be(newPassword);
+        userToUpdate.Name.Should().Be(user.Name);
+        userToUpdate.Email.Should().Be(user.Email);
+        userToUpdate.BirthDate.Should().Be(user.BirthDate);
+        userToUpdate.CreatedAt.Should().Be(user.CreatedAt);
+        userToUpdate.Active.Should().Be(user.Active);
+        userToUpdate.Password.Should().Be(_fixture.GetPasswordHash(newPassword));
+        userToUpdate.OldPassword.Should().Be(_fixture.GetPasswordHash(password));
 
 
     }

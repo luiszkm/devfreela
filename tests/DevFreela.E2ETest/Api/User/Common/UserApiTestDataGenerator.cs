@@ -6,6 +6,7 @@ public class UserApiTestDataGenerator
 {
     public static IEnumerable<object[]> GetInvalidInputs()
     {
+
         var fixture = new UserAPITestFixture();
         var invalidInputsList = new List<object[]>();
         var totalInvalidCases = 3;

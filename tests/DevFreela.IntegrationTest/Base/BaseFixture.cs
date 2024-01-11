@@ -1,7 +1,10 @@
 ﻿
 
+using System.Security.Cryptography;
+using System.Text;
 using Bogus;
 using DevFreela.Domain.Domain.Enums;
+using DevFreela.Infrastructure.Models;
 using DevFreela.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +20,8 @@ public class BaseFixture
     public bool GetRandomBoolean()
         => new Random().NextDouble() < 0.5;
 
-
+    public Guid GetRandomGuid()
+        => Guid.NewGuid();
 
     public string GetValidEmail()
         => Faker.Internet.Email().ToLower();
@@ -34,13 +38,34 @@ public class BaseFixture
     public string GetValidDescription()
         => Faker.Lorem.Paragraph();
 
-    public DomainEntity.User GetValidUser()
+    public string GetPasswordHash(string password)
+    {
+        var sha256 = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(password);
+        var hash = sha256.ComputeHash(bytes);
+        var builder = new StringBuilder();
+        for (int i = 0; i < hash.Length; i++)
+        {
+            builder.Append(hash[i].ToString("X2"));
+        }
+
+        return builder.ToString();
+    }
+
+    public FreelancersInterested GetValidFreelancersInterested(Guid projectId,
+        Guid userId)
+        => new(projectId, userId);
+
+    public DomainEntity.User GetValidUser(
+        UserRole role = UserRole.Client,
+        string? email = null,
+        string? password = null)
         => new(
             GetValidName(),
-            GetValidName(),
-            GetValidPassword(),
+            email ?? GetValidEmail(),
+            password != null ? GetPasswordHash(password) : GetValidPassword(),
             GetValidBirthDate(),
-            UserRole.Client);
+            role);
 
     public List<DomainEntity.Skill> GetValidSkillList()
     {
@@ -53,6 +78,19 @@ public class BaseFixture
 
         return skills;
     }
+
+    public DomainEntity.Project GetValidProject(Guid? idClient = null)
+        => new(
+            GetValidName(),
+            GetValidDescription(),
+            1000,
+            idClient ?? GetRandomGuid());
+
+
+    public List<DomainEntity.Project> GetExampleProjectList(int length = 10)
+        => Enumerable.Range(1, length)
+            .Select(_ => GetValidProject())
+            .ToList();
 
     public void ClearDatabase()
     {

@@ -1,11 +1,11 @@
 ﻿using DevFreela.API.ApiModels.Response;
+using DevFreela.Application.UseCases.Project.FreelancersInterested;
 using DevFreela.Application.UseCases.Project.ChangeStatus;
 using DevFreela.Application.UseCases.Project.Common;
 using DevFreela.Application.UseCases.Project.CreateProject;
 using DevFreela.Application.UseCases.Project.DeleteProject;
 using DevFreela.Application.UseCases.Project.GetProject;
 using DevFreela.Application.UseCases.Project.UpdateProject;
-using DevFreela.Domain.Domain.Entities;
 using DevFreela.Domain.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -93,7 +93,21 @@ public class ProjectsController : ControllerBase
         return NoContent();
     }
 
+    [HttpPatch("{id:guid}/interested")]
+    [Authorize]
+    [ProducesResponseType(typeof(ApiResponse<ProjectModelOutput>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
 
+    public async Task<IActionResult>
+        AddFreelancerInterested([FromBody] FreelancersInterestedInput inputModel)
+    {
+        var project = await _mediator.Send(inputModel);
+        var response = new ApiResponse<ProjectModelOutput>(project);
+
+        return Ok(response);
+    }
 
 
 }

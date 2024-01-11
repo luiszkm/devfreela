@@ -3,11 +3,12 @@
 using DevFreela.Application.Exceptions;
 using DevFreela.Domain.Domain.Enums;
 using DevFreela.Infrastructure.Persistence.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.IntegrationTest.Infra.Repositories.Project;
 
 [Collection(nameof(ProjectRepositoryTestFixture))]
-public class ProjectRepositoryTest
+public class ProjectRepositoryTest : IDisposable
 {
     private readonly ProjectRepositoryTestFixture _fixture;
 
@@ -147,5 +148,77 @@ public class ProjectRepositoryTest
 
     }
 
+    [Fact(DisplayName = nameof(AddFreelancerInterested))]
+    [Trait("Infra", "UserRepository - Repository")]
 
+    public async Task AddFreelancerInterested()
+    {
+        var dbContext = _fixture.CreateDbContext();
+        var project = _fixture.GetValidProject();
+        var user = _fixture.GetValidUser();
+
+        await dbContext.Projects.AddAsync(project);
+        await dbContext.Users.AddAsync(user);
+        await dbContext.SaveChangesAsync();
+
+        var projectRepository = new ProjectRepository(dbContext);
+
+        await projectRepository.AddFreelancerInterested(
+            project.Id,
+            user.Id,
+            CancellationToken.None);
+
+        var projectUpdated = await projectRepository.GetById(project.Id, CancellationToken.None);
+
+        projectUpdated.FreelancersInterested.Should().NotBeNullOrEmpty();
+
+        dbContext.Projects.Should().Contain(project);
+        dbContext.Users.Should().Contain(user);
+        dbContext.FreelancersInterested.Should().NotBeNullOrEmpty();
+        dbContext.FreelancersInterested.Should().Contain(
+            f => f.IdProject == project.Id && f.IdFreelancer == user.Id);
+
+
+    }
+
+
+
+    [Fact(DisplayName = nameof(RemoveFreelancerInterested))]
+    [Trait("Infra", "UserRepository - Repository")]
+
+    public async Task RemoveFreelancerInterested()
+    {
+        var dbContext = _fixture.CreateDbContext();
+        var project = _fixture.GetValidProject();
+        var user = _fixture.GetValidUser();
+        var freelancerInterested = _fixture.GetValidFreelancersInterested(project.Id, user.Id);
+
+        await dbContext.Projects.AddAsync(project);
+        await dbContext.Users.AddAsync(user);
+        await dbContext.FreelancersInterested.AddAsync(freelancerInterested);
+        await dbContext.SaveChangesAsync();
+
+        var projectRepository = new ProjectRepository(dbContext);
+
+        await projectRepository.RemoveFreelancerInterested(
+            project.Id,
+            user.Id,
+            CancellationToken.None);
+
+        var projectUpdated = await projectRepository.GetById(project.Id, CancellationToken.None);
+
+        projectUpdated.FreelancersInterested.Should().BeNullOrEmpty();
+
+        dbContext.Projects.Should().Contain(project);
+        dbContext.Users.Should().Contain(user);
+        dbContext.FreelancersInterested.Should().BeNullOrEmpty();
+        dbContext.FreelancersInterested.Should().NotContain(
+       f => f.IdProject == project.Id && f.IdFreelancer == user.Id);
+
+    }
+
+    public void Dispose()
+    {
+        _fixture.ClearDatabase();
+    }
 }

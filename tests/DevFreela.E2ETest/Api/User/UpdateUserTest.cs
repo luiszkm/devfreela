@@ -44,7 +44,7 @@ public class UpdateUserTest
         output!.Data!.BirthDate.Should().Be(inputModel.BirthDate);
     }
 
-    [Theory(DisplayName = nameof(UpdateUser))]
+    [Theory(DisplayName = nameof(ThrowWhenInvalidData))]
     [Trait("E2E/API", "User/Put - Endpoints")]
     [MemberData(
         nameof(UserApiTestDataGenerator.GetInvalidUpdateInputs),

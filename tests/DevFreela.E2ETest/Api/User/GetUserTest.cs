@@ -4,10 +4,8 @@ using DevFreela.E2ETest.Api.User.Common;
 using FluentAssertions;
 using System.Net;
 using DevFreela.Application.UseCases.User.GetUser;
-using DevFreela.Infrastructure.Persistence.Repository;
 using Microsoft.AspNetCore.Mvc;
-using DevFreela.Application.UseCases.Project.Common;
-using DevFreela.Application.UseCases.Project.GetProject;
+
 
 namespace DevFreela.E2ETest.Api.User;
 [Collection(nameof(UserAPITestFixture))]
@@ -55,6 +53,8 @@ public class GetUserTest
         var userAuthenticate = _fixture.ApiClient.AddAuthorizationHeader(user.Email, password);
         userAuthenticate.Result.Should().BeTrue();
 
+
+
         var inputModel = new GetUserInput(user.Id);
 
         var (response, output) = await _fixture
@@ -70,6 +70,40 @@ public class GetUserTest
         output!.Data!.BirthDate.Should().Be(user.BirthDate);
 
         output!.Data!.Skills.Should().NotBeNullOrEmpty();
+
+    }
+
+
+    [Fact(DisplayName = nameof(GetUserWithOwnedProject))]
+    [Trait("E2E/API", "User/Get - Endpoints")]
+
+    public async Task GetUserWithOwnedProject()
+    {
+        var (user, password) = await _fixture.GetUserInDataBase(withSkills: true);
+        var userAuthenticate = _fixture.ApiClient.AddAuthorizationHeader(user.Email, password);
+        userAuthenticate.Result.Should().BeTrue();
+
+        var project = await _fixture.GetProjectInDataBase(user.Id);
+        project.Should().NotBeNull();
+
+        var inputModel = new GetUserInput(user.Id);
+
+        var (response, output) = await _fixture
+            .ApiClient.Get<ApiResponse
+                <UserModelOutput>>($"/users/{user.Id}", inputModel);
+        response!.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Should().NotBeNull();
+
+        output!.Data.Should().NotBeNull();
+        output!.Data!.Id.Should().NotBeEmpty();
+        output!.Data!.Name.Should().Be(user.Name);
+        output!.Data!.Email.Should().Be(user.Email);
+        output!.Data!.BirthDate.Should().Be(user.BirthDate);
+
+        output!.Data!.OwnedProjects.Should().NotBeNullOrEmpty();
+        output!.Data!.OwnedProjects.Should().HaveCount(1);
+        output!.Data!.OwnedProjects[0].Id.Should().Be(project.Id);
+
 
     }
     [Fact(DisplayName = nameof(ThrowWhenNotFoundUser))]

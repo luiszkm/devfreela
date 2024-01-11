@@ -25,6 +25,7 @@ public class Updateuser : IUpdateUser
             throw new NotFoundException();
         user.Update(request.Name, request.Email, request.BirthDate);
 
+        await _userRepository.Update(user, cancellationToken);
         return UserModelOutput.FromUser(user);
     }
 }

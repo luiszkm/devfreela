@@ -1,9 +1,11 @@
 ﻿
 
+using DevFreela.Application.Exceptions;
 using DevFreela.Domain.Domain.Entities;
 using DevFreela.Domain.Domain.Enums;
 using DevFreela.Domain.Domain.Repository;
 using DevFreela.Domain.Domain.seddwork.SearchbleRepository.cs;
+using DevFreela.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Infrastructure.Persistence.Repository;
@@ -15,17 +17,43 @@ public class ProjectRepository : IProjectRepository
         => _dbContext = dbContext;
 
     private DbSet<Project> _projects => _dbContext.Set<Project>();
+    private DbSet<Skill> _skills => _dbContext.Set<Skill>();
+
+    private DbSet<User> _user => _dbContext.Set<User>();
+    private DbSet<UserOwnedProjects> _userOwnedProjects => _dbContext.Set<UserOwnedProjects>();
+
+    private DbSet<FreelancersInterested> _freelancersInterested => _dbContext.Set<FreelancersInterested>();
 
     public async Task Create(Project aggregate, CancellationToken cancellationToken)
     {
         await _projects.AddAsync(aggregate, cancellationToken);
+        await _userOwnedProjects.AddAsync(new UserOwnedProjects(aggregate.Id, aggregate.IdClient), cancellationToken);
+
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<Project> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var project = await _projects.SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        var project = await _projects.AsNoTracking()
+            .SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
+        if (project == null)
+            throw new NotFoundException();
+
+        var freelancerInterested = await _freelancersInterested.AsNoTracking()
+            .Where(f => f.IdProject == id)
+            .ToListAsync(cancellationToken);
+
+        foreach (var freelancer in freelancerInterested)
+        {
+            var userFreelancer = await _user.AsNoTracking()
+                .SingleOrDefaultAsync(u => u.Id == freelancer.IdFreelancer, cancellationToken);
+
+            project.AddFreelancersInterested(userFreelancer);
+
+        }
+
+
+
 
         return project;
     }
@@ -34,12 +62,12 @@ public class ProjectRepository : IProjectRepository
     {
         var project = await _projects.SingleOrDefaultAsync(p => p.Id == aggregate.Id, cancellationToken);
         if (project == null)
-        {
-            return;
-        }
-        project.Update(aggregate.Title, aggregate.Description, aggregate.TotalCost);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+            throw new NotFoundException();
 
+
+        project.Update(aggregate.Title, aggregate.Description, aggregate.TotalCost);
+        _projects.Update(project);
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
 
     }
@@ -48,9 +76,10 @@ public class ProjectRepository : IProjectRepository
     {
         var project = await _projects.SingleOrDefaultAsync(p => p.Id == aggregate.Id, cancellationToken);
         if (project == null)
-        {
-            return;
-        }
+            throw new NotFoundException();
+
+
+
         _projects.Remove(project);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -74,5 +103,45 @@ public class ProjectRepository : IProjectRepository
 
     }
 
+    public async Task AddFreelancerInterested(Guid projectId, Guid freelancerId, CancellationToken cancellationToken)
+    {
+        var freelancerInterested = await _user.AsNoTracking()
+            .SingleOrDefaultAsync(f => f.Id == freelancerId, cancellationToken);
 
+        if (freelancerInterested == null)
+            throw new NotFoundException();
+
+        var project = await _projects.AsNoTracking()
+            .SingleOrDefaultAsync(p => p.Id == projectId, cancellationToken);
+
+        if (project == null)
+            throw new NotFoundException();
+
+        await _freelancersInterested.AddAsync(new FreelancersInterested(projectId, freelancerId), cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+    }
+
+    public async Task RemoveFreelancerInterested(Guid projectId, Guid freelancerId, CancellationToken cancellationToken)
+    {
+        var freelancerInterested = await _user.AsNoTracking()
+            .SingleOrDefaultAsync(f => f.Id == freelancerId, cancellationToken);
+
+        if (freelancerInterested == null)
+            throw new NotFoundException();
+
+        var project = await _projects.AsNoTracking()
+            .SingleOrDefaultAsync(p => p.Id == projectId, cancellationToken);
+
+        if (project == null)
+            throw new NotFoundException();
+
+        var freelancer = await _freelancersInterested
+            .SingleOrDefaultAsync(f => f.IdFreelancer == freelancerId && f.IdProject == projectId, cancellationToken);
+        if (freelancer == null)
+            throw new NotFoundException();
+
+        _freelancersInterested.Remove(freelancer);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

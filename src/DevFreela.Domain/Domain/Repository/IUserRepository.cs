@@ -13,4 +13,8 @@ public interface IUserRepository : IGenericRepository<User>
 
     Task<List<UserSkills>>? GetUserWithSkills(Guid id);
 
+    Task UpdatePassword(Guid userId,
+        string oldPassword,
+        string newPassword);
+
 }

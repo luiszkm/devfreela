@@ -37,8 +37,9 @@ public class GetUser : IGetUser
                 skills.Add(skillModel);
             }
             user.AddSkills(skills);
-        };
+        }
 
+        ;
 
         return UserModelOutput.FromUser(user, skills);
     }

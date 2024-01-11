@@ -4,6 +4,7 @@ using DevFreela.Application.UseCases.Project.UpdateProject;
 using DevFreela.Application.UseCases.User.Common;
 using DevFreela.Application.UseCases.User.CreateUser;
 using DevFreela.Application.UseCases.User.GetUser;
+using DevFreela.Application.UseCases.User.UpdatePassword;
 using DevFreela.Application.UseCases.User.UpdateUser;
 using DevFreela.Application.UseCases.User.UserSkill;
 using MediatR;
@@ -94,7 +95,21 @@ public class UsersController : ControllerBase
     }
 
 
+    [HttpPatch("{id:guid}/password")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
+    public async Task<IActionResult> UpdatePassword(
+        [FromRoute] Guid id,
+        [FromBody] UpdatePasswordInput inputModel)
+    {
+        await _mediator.Send(inputModel);
+
+        return NoContent();
+    }
 
 
 
