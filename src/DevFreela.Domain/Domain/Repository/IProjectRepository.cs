@@ -13,5 +13,7 @@ public interface IProjectRepository :
 
     Task RemoveFreelancerInterested(Guid projectId, Guid FreelancerId, CancellationToken cancellationToken);
 
+    Task ListFreelancersInterested(Guid projectId, CancellationToken cancellationToken);
+
     // void AddComment(AddCommentInputModel inputModel);
 }

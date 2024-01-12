@@ -1,6 +1,7 @@
 ﻿
 
 using DevFreela.Application.UseCases.Project.FreelancersInterested;
+using DevFreela.Application.UseCases.Project.ListFreelancersInterested;
 using DevFreela.UnitTests.Application.Common;
 using Moq;
 
@@ -203,6 +204,83 @@ public class FreelancersInterested
         output.Should().NotBeNull();
         output.Id.Should().NotBeEmpty();
         output.FreelancersInterested.Should().BeEmpty();
+
+    }
+
+
+    [Fact(DisplayName = nameof(ListAllFreelancersInterested))]
+    [Trait("Application", "Create - Project")]
+
+    public async Task ListAllFreelancersInterested()
+    {
+        var project = _fixture.CreateValidProject();
+        var userList = _fixture.GetListUsers(5);
+        var repositoryMock = _fixture.GetProjectRepositoryMock();
+        var userRepositoryMock = _fixture.GetUserRepositoryMock();
+        repositoryMock.Setup(r => r
+                .GetById(project.Id, CancellationToken.None))
+            .ReturnsAsync(project);
+
+        foreach (var item in userList)
+        {
+            userRepositoryMock.Setup(r => r
+                    .GetById(item.Id, CancellationToken.None))
+                .ReturnsAsync(item);
+
+            project.AddFreelancersInterested(item);
+        }
+
+        project.FreelancersInterested.Should().NotBeNullOrEmpty();
+
+
+        var useCase = new ProjectUseCase.ListFreelancersInterested.ListFreelancersInterested(
+            repositoryMock.Object,
+            userRepositoryMock.Object);
+
+
+        var input = new ListFreelancersInterestedInput(
+            project.Id);
+
+        var output = await useCase.Handle(input, CancellationToken.None);
+
+        var freelancerDataOutputExample = output.Freelancers!.First();
+
+        output.Should().NotBeNull();
+        output.Freelancers.Should().HaveCount(userList.Count);
+        output.Freelancers!.Should().Contain(f => f.UserId == userList.First().Id);
+        freelancerDataOutputExample.Name.Should().Be(userList!.First().Name);
+        freelancerDataOutputExample.Email.Should().Be(userList!.First().Email);
+
+    }
+
+
+    [Fact(DisplayName = nameof(ListAllFreelancersInterestedWhenNoHaveAny))]
+    [Trait("Application", "Create - Project")]
+
+    public async Task ListAllFreelancersInterestedWhenNoHaveAny()
+    {
+        var project = _fixture.CreateValidProject();
+
+        var repositoryMock = _fixture.GetProjectRepositoryMock();
+        var userRepositoryMock = _fixture.GetUserRepositoryMock();
+        repositoryMock.Setup(r => r
+                .GetById(project.Id, CancellationToken.None))
+            .ReturnsAsync(project);
+
+        var useCase = new ProjectUseCase.ListFreelancersInterested.ListFreelancersInterested(
+            repositoryMock.Object,
+            userRepositoryMock.Object);
+
+
+        var input = new ListFreelancersInterestedInput(
+            project.Id);
+
+        var output = await useCase.Handle(input, CancellationToken.None);
+
+        output.Should().NotBeNull();
+        output.Freelancers.Should().HaveCount(0);
+        project.FreelancersInterested.Should().BeNullOrEmpty();
+
 
     }
 }
