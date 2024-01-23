@@ -8,12 +8,19 @@ public interface IProjectRepository :
     IGenericRepository<Project>,
     ISearchRepository<Project>
 {
-    Task ChangeStatus(Guid id, ProjectStatusEnum newStatus, CancellationToken cancellationToken);
-    Task AddFreelancerInterested(Guid projectId, Guid FreelancerId, CancellationToken cancellationToken);
+    Task ChangeStatus
+        (Guid id,
+            ProjectStatusEnum newStatus,
+            CancellationToken cancellationToken);
+    Task AddFreelancerInterested
+        (Guid projectId,
+            Guid FreelancerId,
+            CancellationToken cancellationToken);
 
-    Task RemoveFreelancerInterested(Guid projectId, Guid FreelancerId, CancellationToken cancellationToken);
-
-    Task ListFreelancersInterested(Guid projectId, CancellationToken cancellationToken);
+    Task RemoveFreelancerInterested
+        (Guid projectId,
+            Guid FreelancerId,
+            CancellationToken cancellationToken);
 
     // void AddComment(AddCommentInputModel inputModel);
 }

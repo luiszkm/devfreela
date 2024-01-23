@@ -25,7 +25,7 @@ public class ListFreelancersInterested : IRequestHandler<ListFreelancersInterest
         var project = await _projectRepository
             .GetById(request.IdProject, cancellationToken);
 
-        if (project == null) throw new NotFoundException();
+        ///if (project == null) throw new NotFoundException();
 
         var freelancers = project.FreelancersInterested;
 

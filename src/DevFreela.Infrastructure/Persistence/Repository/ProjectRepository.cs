@@ -52,13 +52,12 @@ public class ProjectRepository : IProjectRepository
 
         }
 
-
-
-
         return project;
     }
 
-    public async Task Update(Project aggregate, CancellationToken cancellationToken)
+    public async Task Update(
+        Project aggregate,
+        CancellationToken cancellationToken)
     {
         var project = await _projects.SingleOrDefaultAsync(p => p.Id == aggregate.Id, cancellationToken);
         if (project == null)
@@ -72,7 +71,9 @@ public class ProjectRepository : IProjectRepository
 
     }
 
-    public async Task Delete(Project aggregate, CancellationToken cancellationToken)
+    public async Task Delete(
+        Project aggregate,
+        CancellationToken cancellationToken)
     {
         var project = await _projects.SingleOrDefaultAsync(p => p.Id == aggregate.Id, cancellationToken);
         if (project == null)
@@ -85,12 +86,17 @@ public class ProjectRepository : IProjectRepository
 
     }
 
-    public Task<SearchOutput<Project>> Search(SearchInput input, CancellationToken cancellationToken)
+    public Task<SearchOutput<Project>> Search(
+        SearchInput input,
+        CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public async Task ChangeStatus(Guid id, ProjectStatusEnum newStatus, CancellationToken cancellationToken)
+    public async Task ChangeStatus(
+        Guid id,
+        ProjectStatusEnum newStatus,
+        CancellationToken cancellationToken)
     {
         var project = await _projects.SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
         if (project == null)
@@ -103,7 +109,10 @@ public class ProjectRepository : IProjectRepository
 
     }
 
-    public async Task AddFreelancerInterested(Guid projectId, Guid freelancerId, CancellationToken cancellationToken)
+    public async Task AddFreelancerInterested(
+        Guid projectId,
+        Guid freelancerId,
+        CancellationToken cancellationToken)
     {
         var freelancerInterested = await _user.AsNoTracking()
             .SingleOrDefaultAsync(f => f.Id == freelancerId, cancellationToken);
@@ -122,7 +131,10 @@ public class ProjectRepository : IProjectRepository
 
     }
 
-    public async Task RemoveFreelancerInterested(Guid projectId, Guid freelancerId, CancellationToken cancellationToken)
+    public async Task RemoveFreelancerInterested(
+        Guid projectId,
+        Guid freelancerId,
+        CancellationToken cancellationToken)
     {
         var freelancerInterested = await _user.AsNoTracking()
             .SingleOrDefaultAsync(f => f.Id == freelancerId, cancellationToken);
@@ -144,4 +156,5 @@ public class ProjectRepository : IProjectRepository
         _freelancersInterested.Remove(freelancer);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
+
 }

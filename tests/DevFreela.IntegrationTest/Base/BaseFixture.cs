@@ -52,7 +52,9 @@ public class BaseFixture
         return builder.ToString();
     }
 
-    public FreelancersInterested GetValidFreelancersInterested(Guid projectId,
+    public FreelancersInterested
+        GetValidFreelancersInterested(
+            Guid projectId,
         Guid userId)
         => new(projectId, userId);
 
@@ -67,6 +69,12 @@ public class BaseFixture
             GetValidBirthDate(),
             role);
 
+    public List<DomainEntity.User>
+        GetExampleUserList(int length = 10)
+        => Enumerable.Range(1, length)
+            .Select(_ => GetValidUser())
+            .ToList();
+
     public List<DomainEntity.Skill> GetValidSkillList()
     {
         var skills = new List<DomainEntity.Skill>();
@@ -79,15 +87,37 @@ public class BaseFixture
         return skills;
     }
 
-    public DomainEntity.Project GetValidProject(Guid? idClient = null)
-        => new(
+    public DomainEntity.Project
+        GetValidProject(
+            Guid? idClient = null,
+            bool? withFreelancersInterested = false
+            )
+    {
+        var project = new DomainEntity.Project(
             GetValidName(),
             GetValidDescription(),
             1000,
-            idClient ?? GetRandomGuid());
+            idClient ?? GetRandomGuid()
+        );
+        if (withFreelancersInterested.Value)
+        {
+            var listUser = GetExampleUserList();
+
+            foreach (var user in listUser)
+            {
+                project.AddFreelancersInterested(user);
+            }
+        }
 
 
-    public List<DomainEntity.Project> GetExampleProjectList(int length = 10)
+        return project;
+    }
+
+
+
+
+    public List<DomainEntity.Project>
+        GetExampleProjectList(int length = 10)
         => Enumerable.Range(1, length)
             .Select(_ => GetValidProject())
             .ToList();

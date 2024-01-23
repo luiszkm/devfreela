@@ -5,6 +5,7 @@ using DevFreela.Application.UseCases.Project.Common;
 using DevFreela.Application.UseCases.Project.CreateProject;
 using DevFreela.Application.UseCases.Project.DeleteProject;
 using DevFreela.Application.UseCases.Project.GetProject;
+using DevFreela.Application.UseCases.Project.ListFreelancersInterested;
 using DevFreela.Application.UseCases.Project.UpdateProject;
 using DevFreela.Domain.Domain.Enums;
 using MediatR;

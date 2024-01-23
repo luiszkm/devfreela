@@ -20,10 +20,10 @@ public class GetProjectTest
         _fixture = fixture;
     }
 
-    [Fact(DisplayName = nameof(UpdateProject))]
+    [Fact(DisplayName = nameof(GetProject))]
     [Trait("E2E/API", "Project/Get - Endpoints")]
 
-    public async Task UpdateProject()
+    public async Task GetProject()
     {
         var (user, password) = await _fixture.GetUserInDataBase();
         var userAuthenticate = _fixture.ApiClient.AddAuthorizationHeader(user.Email, password);

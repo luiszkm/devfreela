@@ -1,6 +1,4 @@
-﻿
-
-using System.Net;
+﻿using System.Net;
 using DevFreela.API.ApiModels.Response;
 using DevFreela.Application.UseCases.Project.FreelancersInterested;
 using DevFreela.Application.UseCases.Project.Common;
@@ -45,8 +43,6 @@ public class ListUsersInterestedInTheProject
         output!.Data!.FreelancersInterested.Should().NotBeEmpty();
         output!.Data!.FreelancersInterested.Should().HaveCount(1);
         output!.Data!.FreelancersInterested.First().FreelancerId.Should().Be(user.Id);
-
-
 
     }
 
@@ -130,8 +126,6 @@ public class ListUsersInterestedInTheProject
         var (response, output) = await _fixture
             .ApiClient.Patch<ApiResponse<ProjectModelOutput>>($"/projects/{project.Id}/interested", inputModel);
 
-        var totalFreelancers = project.FreelancersInterested.Count - 1;
-
         response!.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Should().NotBeNull();
         output!.Data.Should().NotBeNull();
@@ -142,6 +136,29 @@ public class ListUsersInterestedInTheProject
         output!.Data!.FreelancersInterested.Should().HaveCount(0);
         output!.Data!.FreelancersInterested.Should().NotContain(f => f.FreelancerId == user.Id);
 
+
+    }
+
+    [Fact(DisplayName = nameof(ListFreelancerInterestedInTheProject))]
+    [Trait("E2E/API", "Project/AddUserOnTheLisInterested - Endpoints")]
+
+    public async Task ListFreelancerInterestedInTheProject()
+    {
+        var ownerUser = await _fixture.GetUserInDataBase();
+        var project = await _fixture.CreateProjectInDataBase(
+            ownerUser.user.Id,
+            true);// 5 freelancers interested
+
+        var (response, output) = await _fixture
+            .ApiClient.Get<ApiResponse<ProjectModelOutput>>($"/projects/{project.Id}");
+
+        response!.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Should().NotBeNull();
+        output!.Data.Should().NotBeNull();
+        output!.Data!.Id.Should().NotBeEmpty();
+        output!.Data!.Id.Should().Be(project.Id);
+        output!.Data!.FreelancersInterested.Should().NotBeEmpty();
+        output!.Data!.FreelancersInterested.Should().HaveCount(5);
 
     }
 
