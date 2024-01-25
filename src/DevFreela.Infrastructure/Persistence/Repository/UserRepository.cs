@@ -72,6 +72,16 @@ public class UserRepository : IUserRepository
             user.AddOwnedProject(projectFounded!);
         }
 
+        var userFreelancerProjects = await _dbContext.Projects
+            .AsNoTracking()
+            .Where(p => p.IdFreelancer == id)
+            .ToListAsync(cancellationToken);
+
+        foreach (var project in userFreelancerProjects)
+        {
+            user.AddFreelanceProject(project);
+        }
+
 
         return user;
     }

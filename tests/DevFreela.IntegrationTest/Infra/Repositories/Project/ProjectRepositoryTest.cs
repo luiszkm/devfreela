@@ -1,11 +1,9 @@
 ﻿
 
 using DevFreela.Application.Exceptions;
-using DevFreela.Domain.Domain.Entities;
 using DevFreela.Domain.Domain.Enums;
 using DevFreela.Infrastructure.Models;
 using DevFreela.Infrastructure.Persistence.Repository;
-using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.IntegrationTest.Infra.Repositories.Project;
 
@@ -130,7 +128,7 @@ public class ProjectRepositoryTest : IDisposable
 
 
     [Fact(DisplayName = nameof(ChangeStatusProject))]
-    [Trait("Infra", "UserRepository - Repository")]
+    [Trait("Infra", "ProjectRepository - Repository")]
 
     public async Task ChangeStatusProject()
     {
@@ -151,7 +149,7 @@ public class ProjectRepositoryTest : IDisposable
     }
 
     [Fact(DisplayName = nameof(AddFreelancerInterested))]
-    [Trait("Infra", "UserRepository - Repository")]
+    [Trait("Infra", "ProjectRepository - Repository")]
 
     public async Task AddFreelancerInterested()
     {
@@ -180,12 +178,11 @@ public class ProjectRepositoryTest : IDisposable
         dbContext.FreelancersInterested.Should().Contain(
             f => f.IdProject == project.Id && f.IdFreelancer == user.Id);
 
-
     }
 
 
     [Fact(DisplayName = nameof(RemoveFreelancerInterested))]
-    [Trait("Infra", "UserRepository - Repository")]
+    [Trait("Infra", "ProjectRepository - Repository")]
 
     public async Task RemoveFreelancerInterested()
     {
@@ -218,7 +215,7 @@ public class ProjectRepositoryTest : IDisposable
 
     }
     [Fact(DisplayName = nameof(RemoveFreelancerInterestedWithMany))]
-    [Trait("Infra", "UserRepository - Repository")]
+    [Trait("Infra", "ProjectRepository - Repository")]
 
     public async Task RemoveFreelancerInterestedWithMany()
     {
@@ -244,10 +241,7 @@ public class ProjectRepositoryTest : IDisposable
             freelancerToRemove.IdFreelancer,
             CancellationToken.None);
 
-
         var projectUpdated = await projectRepository.GetById(project.Id, CancellationToken.None);
-
-
 
         projectUpdated.FreelancersInterested.Should().NotBeNullOrEmpty();
 
@@ -259,41 +253,66 @@ public class ProjectRepositoryTest : IDisposable
 
     }
 
-    [Fact(DisplayName = nameof(ListFreelancerInterested))]
-    [Trait("Infra", "UserRepository - Repository")]
-
-    public async Task ListFreelancerInterested()
+    [Fact(DisplayName = nameof(ContractFreelancer))]
+    [Trait("Infra", "ProjectRepository - Repository")]
+    public async Task ContractFreelancer()
     {
+        var freelancerToContract = _fixture.GetValidUser();
         var dbContext = _fixture.CreateDbContext();
-        var project = _fixture.GetValidProject(withFreelancersInterested: true);
-        var freelancerInterested = new List<FreelancersInterested>();
+        var project = _fixture.GetValidProject(withFreelancersInterested: false);
 
-        foreach (var freelancer in project.FreelancersInterested)
-        {
-            freelancerInterested.Add(new FreelancersInterested(
-                               project.Id,
-                               freelancer.Id));
-        }
-
-        await dbContext.Projects.AddAsync(project);
-        await dbContext.FreelancersInterested.AddRangeAsync(freelancerInterested);
+        dbContext.Projects.Add(project);
+        dbContext.Users.Add(freelancerToContract);
         await dbContext.SaveChangesAsync();
 
         var projectRepository = new ProjectRepository(dbContext);
-        await projectRepository.ListFreelancersInterested(project.Id, CancellationToken.None);
+
+        await projectRepository.ContractFreelancer(
+            project.Id,
+            freelancerToContract.Id,
+            CancellationToken.None);
+
+
 
         var projectUpdated = await projectRepository.GetById(project.Id, CancellationToken.None);
+        projectUpdated.IdFreelancer.Should().Be(freelancerToContract.Id);
+        projectUpdated.Status.Should().Be(ProjectStatusEnum.InProgress);
 
-        projectUpdated.FreelancersInterested.Should().NotBeNullOrEmpty();
+        freelancerToContract.FreelanceProjects.Should().NotBeNullOrEmpty();
+        freelancerToContract.FreelanceProjects.Should().Contain(
+                       f => f.Id == project.Id && f.IdFreelancer == freelancerToContract.Id);
 
         dbContext.Projects.Should().Contain(project);
-        dbContext.FreelancersInterested.Should().NotBeNullOrEmpty();
-        dbContext.FreelancersInterested.Should().Contain(
-                       f => f.IdProject == project.Id && f.IdFreelancer == project.FreelancersInterested[0].Id);
-        projectUpdated.FreelancersInterested.Should().HaveCount(project.FreelancersInterested.Count);
+        dbContext.FreelancerOwnedProjects.Should().NotBeNullOrEmpty();
+        dbContext.FreelancerOwnedProjects.Should().Contain(
+                       f => f.IdProject == project.Id && f.IdUser == freelancerToContract.Id);
+
 
     }
 
+    [Fact(DisplayName = nameof(ThrowWhenNotTryingFoundProject))]
+    [Trait("Infra", "ProjectRepository - Repository")]
+    public async Task ThrowWhenNotTryingFoundProject()
+    {
+        var freelancerToContract = _fixture.GetValidUser();
+        var dbContext = _fixture.CreateDbContext();
+        var project = _fixture.GetValidProject(withFreelancersInterested: false);
+
+        dbContext.Users.Add(freelancerToContract);
+        await dbContext.SaveChangesAsync();
+
+        var projectRepository = new ProjectRepository(dbContext);
+
+        var action = async () => await projectRepository.ContractFreelancer(
+              project.Id,
+              freelancerToContract.Id,
+              CancellationToken.None);
+
+
+        action.Should().ThrowAsync<NotFoundException>();
+
+        dbContext.Projects.Should().NotContain(project);
+    }
 
 
     public void Dispose()

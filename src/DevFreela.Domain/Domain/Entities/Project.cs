@@ -99,10 +99,7 @@ public class Project : AggregateRoot
 
     public void ContractFreelancer(Guid freelancerId)
     {
-        var freelancerExists = FreelancersInterested.Find(x => x.Id == freelancerId);
-        if (freelancerExists == null)
-            FreelancersInterested.Add(freelancerExists);
-        IdFreelancer = freelancerExists.Id;
+        IdFreelancer = freelancerId;
         Status = ProjectStatusEnum.InProgress;
         StartedAt = DateTime.Now;
     }

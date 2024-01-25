@@ -9,6 +9,7 @@ using DevFreela.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Infrastructure.Persistence.Repository;
+
 public class ProjectRepository : IProjectRepository
 {
     private readonly DevFreelaDbContext _dbContext;
@@ -20,9 +21,14 @@ public class ProjectRepository : IProjectRepository
     private DbSet<Skill> _skills => _dbContext.Set<Skill>();
 
     private DbSet<User> _user => _dbContext.Set<User>();
-    private DbSet<UserOwnedProjects> _userOwnedProjects => _dbContext.Set<UserOwnedProjects>();
 
-    private DbSet<FreelancersInterested> _freelancersInterested => _dbContext.Set<FreelancersInterested>();
+    private DbSet<UserOwnedProjects> _userOwnedProjects =>
+        _dbContext.Set<UserOwnedProjects>();
+    private DbSet<FreelancerOwnedProjects> _freelancerOwnedProjects =>
+        _dbContext.Set<FreelancerOwnedProjects>();
+
+    private DbSet<FreelancersInterested> _freelancersInterested =>
+        _dbContext.Set<FreelancersInterested>();
 
     public async Task Create(Project aggregate, CancellationToken cancellationToken)
     {
@@ -39,18 +45,30 @@ public class ProjectRepository : IProjectRepository
         if (project == null)
             throw new NotFoundException();
 
-        var freelancerInterested = await _freelancersInterested.AsNoTracking()
+        var freelancerInterested = await _freelancersInterested
             .Where(f => f.IdProject == id)
             .ToListAsync(cancellationToken);
 
         foreach (var freelancer in freelancerInterested)
         {
-            var userFreelancer = await _user.AsNoTracking()
+            var userFreelancer = await _user
                 .SingleOrDefaultAsync(u => u.Id == freelancer.IdFreelancer, cancellationToken);
 
             project.AddFreelancersInterested(userFreelancer);
 
         }
+
+        var freelancerOwned = await _freelancerOwnedProjects
+            .SingleOrDefaultAsync(f => f.IdProject == id, cancellationToken);
+        if (freelancerOwned != null)
+        {
+            var freelancer = await _user
+                .SingleOrDefaultAsync(u => u.Id == freelancerOwned.IdUser, cancellationToken);
+            project.ContractFreelancer(freelancer.Id);
+        }
+
+
+
 
         return project;
     }
@@ -103,6 +121,7 @@ public class ProjectRepository : IProjectRepository
         {
             return;
         }
+
         project.ChangeStatus(newStatus);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -114,13 +133,13 @@ public class ProjectRepository : IProjectRepository
         Guid freelancerId,
         CancellationToken cancellationToken)
     {
-        var freelancerInterested = await _user.AsNoTracking()
+        var freelancerInterested = await _user
             .SingleOrDefaultAsync(f => f.Id == freelancerId, cancellationToken);
 
         if (freelancerInterested == null)
             throw new NotFoundException();
 
-        var project = await _projects.AsNoTracking()
+        var project = await _projects
             .SingleOrDefaultAsync(p => p.Id == projectId, cancellationToken);
 
         if (project == null)
@@ -136,13 +155,13 @@ public class ProjectRepository : IProjectRepository
         Guid freelancerId,
         CancellationToken cancellationToken)
     {
-        var freelancerInterested = await _user.AsNoTracking()
+        var freelancerInterested = await _user
             .SingleOrDefaultAsync(f => f.Id == freelancerId, cancellationToken);
 
         if (freelancerInterested == null)
             throw new NotFoundException();
 
-        var project = await _projects.AsNoTracking()
+        var project = await _projects
             .SingleOrDefaultAsync(p => p.Id == projectId, cancellationToken);
 
         if (project == null)
@@ -156,5 +175,41 @@ public class ProjectRepository : IProjectRepository
         _freelancersInterested.Remove(freelancer);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task ContractFreelancer(Guid projectId, Guid FreelancerId, CancellationToken cancellationToken)
+    {
+        var project = await _projects
+            .SingleOrDefaultAsync(p => p.Id == projectId, cancellationToken);
+
+        var freelancer = await _user
+            .SingleOrDefaultAsync(f => f.Id == FreelancerId, cancellationToken);
+
+        if (freelancer == null || project == null)
+            throw new NotFoundException();
+
+
+        project.ContractFreelancer(freelancer.Id);
+
+        project.ChangeStatus(ProjectStatusEnum.InProgress);
+
+        freelancer.AddFreelanceProject(project);
+
+
+        _freelancerOwnedProjects.Add(
+           new FreelancerOwnedProjects(
+               projectId,
+               FreelancerId));
+
+        _user.Update(freelancer);
+        _projects.Update(project);
+
+
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+
+    }
+
+
 
 }

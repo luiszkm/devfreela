@@ -22,5 +22,10 @@ public interface IProjectRepository :
             Guid FreelancerId,
             CancellationToken cancellationToken);
 
+    Task ContractFreelancer(
+            Guid projectId,
+            Guid FreelancerId,
+            CancellationToken cancellationToken);
+
     // void AddComment(AddCommentInputModel inputModel);
 }

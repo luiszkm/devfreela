@@ -18,7 +18,10 @@ public class DevFreelaDbContext : DbContext
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Skill> Skills => Set<Skill>();
 
+
+    /// Relational Tables »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
     public DbSet<UserOwnedProjects> UserOwnedProjects => Set<UserOwnedProjects>();
+    public DbSet<FreelancerOwnedProjects> FreelancerOwnedProjects => Set<FreelancerOwnedProjects>();
 
     //public DbSet<ProjectComment> ProjectComment =>Set<ProjectComment>();
 
@@ -35,10 +38,11 @@ public class DevFreelaDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ProjectConfigurations());
         modelBuilder.ApplyConfiguration(new SkillConfigurations());
         //modelBuilder.ApplyConfiguration(new ProjectCommentConfigurations());
-
+        // Relational Tab »»»»»»»»»»»»
         modelBuilder.ApplyConfiguration(new FreelancersInterestedConfigurations());
         modelBuilder.ApplyConfiguration(new UserSkillsConfigurations());
         modelBuilder.ApplyConfiguration(new UserOwnedProjectsConfigurations());
+        modelBuilder.ApplyConfiguration(new FreelancerOwnedProjectsConfigurations());
         // modelBuilder.ApplyConfiguration(new ProjectCommentsConfigurations());
     }
 }

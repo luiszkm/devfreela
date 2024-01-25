@@ -14,7 +14,8 @@ public class UserModelOutput
         string email,
         DateTime birthDate,
         List<DomainEntity.Skill> skills,
-        IReadOnlyList<UserOwnedProjectModelOutput> ownedProjects)
+        IReadOnlyList<UserOwnedProjectModelOutput> ownedProjects,
+        IReadOnlyList<UserOwnedProjectModelOutput> freelancerProjects)
     {
         Id = id;
         Name = name;
@@ -22,6 +23,7 @@ public class UserModelOutput
         BirthDate = birthDate;
         Skills = skills;
         OwnedProjects = ownedProjects;
+        FreelancerProjects = freelancerProjects;
     }
 
     public Guid Id { get; private set; }
@@ -31,6 +33,8 @@ public class UserModelOutput
     public List<DomainEntity.Skill> Skills { get; private set; }
 
     public IReadOnlyList<UserOwnedProjectModelOutput> OwnedProjects { get; set; }
+
+    public IReadOnlyList<UserOwnedProjectModelOutput> FreelancerProjects { get; set; }
 
 
     public class UserOwnedProjectModelOutput
@@ -60,7 +64,10 @@ public class UserModelOutput
             user.BirthDate,
             skills,
             user.OwnedProjects.Select(
-                p => new UserOwnedProjectModelOutput(p.Id, p.Title)).ToList()
+                p => new UserOwnedProjectModelOutput(p.Id, p.Title)).ToList(),
+            user.FreelanceProjects.Select(
+                p => new UserOwnedProjectModelOutput(p.Id, p.Title)).ToList(
+                )
             );
     }
 
