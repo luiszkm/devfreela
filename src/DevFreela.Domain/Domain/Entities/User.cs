@@ -75,7 +75,6 @@ public class User : AggregateRoot
     }
 
 
-
     public void AddSkills(List<Skill> skills)
     {
         var userSkills = skills.Count;
