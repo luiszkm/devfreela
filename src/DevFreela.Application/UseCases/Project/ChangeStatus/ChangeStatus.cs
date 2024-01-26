@@ -22,5 +22,10 @@ public class ChangeStatus : IChangeStatus
 
         project.ChangeStatus((ProjectStatusEnum)request.Status);
 
+        await _projectRepository.ChangeStatus(
+            project.Id,
+            (ProjectStatusEnum)request.Status,
+            cancellationToken);
+
     }
 }

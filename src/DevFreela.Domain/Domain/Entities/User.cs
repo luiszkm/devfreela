@@ -90,7 +90,6 @@ public class User : AggregateRoot
     }
 
 
-
     public void AddOwnedProject(Project project)
     {
         var projectAlreadyExists = OwnedProjects.Any(p => p.Id == project.Id);
@@ -99,14 +98,12 @@ public class User : AggregateRoot
     }
 
 
-
     public void AddFreelanceProject(Project project)
     {
         var projectAlreadyExists = FreelanceProjects.Any(p => p.Id == project.Id);
         if (projectAlreadyExists) return;
         FreelanceProjects.Add(project);
     }
-
 
 
     public void AddComment(ProjectComment comment)

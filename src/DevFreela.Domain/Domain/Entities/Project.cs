@@ -108,6 +108,10 @@ public class Project : AggregateRoot
     {
         if (Status == ProjectStatusEnum.Suspended)
             Status = ProjectStatusEnum.Cancelled;
+        else
+        {
+            throw new Exception("Não é possível cancelar um projeto que não esteja suspenso");
+        }
 
     }
 
@@ -143,6 +147,10 @@ public class Project : AggregateRoot
         {
             Status = ProjectStatusEnum.Finished;
             FinishedAt = DateTime.Now;
+        }
+        else
+        {
+            throw new Exception("Não é possível fechar um projeto que não esteja com o pagamento pendente");
         }
     }
 

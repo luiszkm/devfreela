@@ -123,6 +123,7 @@ public class ProjectRepository : IProjectRepository
         }
 
         project.ChangeStatus(newStatus);
+        _projects.Update(project);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
 

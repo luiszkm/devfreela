@@ -5,7 +5,9 @@ using DevFreela.E2ETest.Api.Project.Common;
 using FluentAssertions;
 using System.Net;
 using DevFreela.Application.UseCases.Project.ChangeStatus;
+using DevFreela.Domain.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.E2ETest.Api.Project;
 [Collection(nameof(ProjectAPITestFixture))]
@@ -22,11 +24,10 @@ public class ChangeStatusTest
     [Theory(DisplayName = nameof(ChangeStatus))]
     [Trait("E2E/API", "Project/ChangeStatus - Endpoints")]
     [InlineData(ChangeStatusInputModel.ProjectStatusEnum.InProgress)]
-    [InlineData(ChangeStatusInputModel.ProjectStatusEnum.Finished)]
-    [InlineData(ChangeStatusInputModel.ProjectStatusEnum.Cancelled)]
     [InlineData(ChangeStatusInputModel.ProjectStatusEnum.Suspended)]
     public async Task ChangeStatus(ChangeStatusInputModel.ProjectStatusEnum status)
     {
+        var dbContext = _fixture.CreateApiDbContextInMemory();
         var (user, password) = await _fixture.GetUserInDataBase();
         var userAuthenticate = _fixture.ApiClient.AddAuthorizationHeader(user.Email, password);
         var project = await _fixture.CreateProjectInDataBase(user.Id);
@@ -37,7 +38,81 @@ public class ChangeStatusTest
 
         var (response, _) = await _fixture
             .ApiClient.Patch<NoContentResult>($"/projects/{project.Id}", inputModel);
+        var projectChanged = await dbContext.Projects.FindAsync(project.Id);
 
+        response!.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.Should().NotBeNull();
+
+        projectChanged.Should().NotBeNull();
+        projectChanged!.Status.Should().Be((ProjectStatusEnum)status);
+
+
+
+    }
+    [Fact(DisplayName = nameof(ChangeStatusToCanceled))]
+    [Trait("E2E/API", "Project/ChangeStatus - Endpoints")]
+
+    public async Task ChangeStatusToCanceled()
+    {
+        var dbContext = _fixture.CreateApiDbContextInMemory();
+        var (user, password) = await _fixture.GetUserInDataBase();
+        var userAuthenticate = _fixture.ApiClient.AddAuthorizationHeader(user.Email, password);
+        var project = await _fixture.CreateProjectInDataBase(user.Id);
+        project.ChangeStatus(ProjectStatusEnum.Suspended);
+        dbContext.Projects.Update(project);
+        await dbContext.SaveChangesAsync();
+
+
+        userAuthenticate.Result.Should().BeTrue();
+
+        var inputModel = new ChangeStatusInputModel(project.Id,
+            ChangeStatusInputModel.ProjectStatusEnum.Cancelled);
+
+        var (response, _) = await _fixture
+            .ApiClient.Patch<NoContentResult>($"/projects/{project.Id}", inputModel);
+
+        var projectChanged = await dbContext.Projects
+            .AsNoTracking().FirstOrDefaultAsync(p => p.Id == project.Id);
+
+        projectChanged.Should().NotBeNull();
+        projectChanged!.Status.Should().Be(ProjectStatusEnum.Cancelled);
+
+        response!.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.Should().NotBeNull();
+
+    }
+
+    [Fact(DisplayName = nameof(ChangeStatusToFinished))]
+    [Trait("E2E/API", "Project/ChangeStatus - Endpoints")]
+
+    public async Task ChangeStatusToFinished()
+    {
+        var dbContext = _fixture.CreateApiDbContextInMemory();
+        var (user, password) = await _fixture.GetUserInDataBase();
+        var userAuthenticate = _fixture.ApiClient.AddAuthorizationHeader(user.Email, password);
+        var project = await _fixture.CreateProjectInDataBase(user.Id);
+        project.ChangeStatus(ProjectStatusEnum.InProgress);
+        dbContext.Projects.Update(project);
+
+
+        project.ChangeStatus(ProjectStatusEnum.PaymentPending);
+        dbContext.Projects.Update(project);
+
+        await dbContext.SaveChangesAsync();
+
+        userAuthenticate.Result.Should().BeTrue();
+
+        var inputModel = new ChangeStatusInputModel(project.Id,
+            ChangeStatusInputModel.ProjectStatusEnum.Finished);
+
+        var (response, _) = await _fixture
+            .ApiClient.Patch<NoContentResult>($"/projects/{project.Id}", inputModel);
+
+        var projectChanged = await dbContext.Projects
+            .AsNoTracking().FirstOrDefaultAsync(p => p.Id == project.Id);
+
+        projectChanged.Should().NotBeNull();
+        projectChanged!.Status.Should().Be(ProjectStatusEnum.Finished);
 
         response!.StatusCode.Should().Be(HttpStatusCode.NoContent);
         response.Should().NotBeNull();
