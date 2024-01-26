@@ -11,8 +11,20 @@ public class BaseFixture
         => Faker = new Faker("pt_BR");
     public Decimal GetRandomDecimal()
         => new Random().Next(1, 10000);
-    public bool GetRandomBoolean()
-        => new Random().NextDouble() < 0.5;
+
+    public Guid GetValidGuid()
+        => Guid.NewGuid();
+
+    public string GetValidDescription()
+        => Faker.Lorem.Paragraph();
+
+
+    public DomainEntity.Project CreateValidProject(Guid? ClientId = null)
+        => new DomainEntity.Project(
+            GetValidName(),
+            GetValidDescription(),
+            GetRandomDecimal(),
+            ClientId ?? GetValidGuid());
 
     public List<DomainEntity.User> GetListUsers(int total = 10)
     {
@@ -49,6 +61,17 @@ public class BaseFixture
     public DomainEntity.Skill GetValidSkill()
         => new(GetValidName());
 
+    public List<DomainEntity.Skill> GetValidSkillList()
+    {
+        var skills = new List<DomainEntity.Skill>();
+        for (int i = 0; i < 5; i++)
+        {
+            skills.Add(new DomainEntity.Skill(
+                Faker.Company.Random.Words()));
+        }
+
+        return skills;
+    }
     public DomainEntity.ProjectComment GetValidProjectComment(
         Guid? projectId = null,
         Guid? userId = null)
@@ -64,12 +87,7 @@ public class BaseFixture
             projectId ?? Guid.NewGuid(),
             skillId ?? Guid.NewGuid());
 
-    public DomainEntity.Models.UserSkills GetValidUserSkill(
-        Guid? projectId = null,
-        Guid? skillId = null)
-        => new(
-            projectId ?? Guid.NewGuid(),
-            skillId ?? Guid.NewGuid());
+
 
 
 }

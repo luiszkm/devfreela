@@ -3,16 +3,10 @@
 namespace DevFreela.Application.Exceptions;
 public class NotFoundException : ApplicationException
 {
-    public NotFoundException(string message) : base(message)
+    public NotFoundException() : base("Aggregate NotFound")
     {
 
     }
 
-    public static void ThrowIfNull(object? obj, string? message)
-    {
-        if (obj == null)
-        {
-            throw new NotFoundException(message);
-        }
-    }
+
 }

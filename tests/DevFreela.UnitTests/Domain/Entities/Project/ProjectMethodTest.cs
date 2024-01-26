@@ -27,11 +27,6 @@ public class ProjectMethodTest
         project.AddFreelancersInterested(user[9]);
         project.FreelancersInterested.Should().HaveCount(2);
 
-        // for (int i = 0; i < 5; i++)
-        // {
-        //     project.AddFreelancersInterested(user[i].Id);
-        // }
-        // project.FreelancersInterested.Should().HaveCount(7);
 
     }
     [Fact(DisplayName = nameof(RemoveFreelancersInterested))]

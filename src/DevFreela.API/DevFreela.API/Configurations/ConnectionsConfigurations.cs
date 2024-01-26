@@ -31,6 +31,7 @@ public static class ConnectionsConfigurations
         connectionStringBuilder.Encrypt = false;
         connectionStringBuilder.TrustServerCertificate = true;
 
+
         services.AddDbContext<DevFreelaDbContext>(
             options => options.UseSqlServer(connectionStringBuilder.ToString()));
 
@@ -52,7 +53,9 @@ public static class ConnectionsConfigurations
         this IServiceCollection services)
     {
         services.AddDbContext<DevFreelaDbContext>(
-            options => options.UseInMemoryDatabase("DevFreela-In-Memory"));
+            options => options
+                .EnableSensitiveDataLogging()
+                .UseInMemoryDatabase("DevFreela-In-Memory"));
 
         return services;
     }

@@ -9,8 +9,13 @@ public class GetUser : IGetUser
 {
 
     private readonly IUserRepository _userRepository;
-    public GetUser(IUserRepository userRepository)
-    => _userRepository = userRepository;
+    private readonly ISkillRepository _skillRepository;
+    public GetUser(IUserRepository userRepository,
+        ISkillRepository skillRepository)
+    {
+        _userRepository = userRepository;
+        _skillRepository = skillRepository;
+    }
 
     public async Task<UserModelOutput>
         Handle(GetUserInput request, CancellationToken cancellationToken)
@@ -18,10 +23,24 @@ public class GetUser : IGetUser
         var user = await _userRepository.GetById(request.Id, cancellationToken);
 
         if (user == null)
+            throw new NotFoundException();
+
+
+        var userSkills = await _userRepository.GetUserWithSkills(request.Id);
+        var skills = new List<DomainEntity.Skill>();
+
+        if (userSkills != null)
         {
-            throw new NotFoundException("User not found");
+            foreach (var skill in userSkills)
+            {
+                var skillModel = _skillRepository.GetById(skill.IdSkill);
+                skills.Add(skillModel);
+            }
+            user.AddSkills(skills);
         }
 
-        return UserModelOutput.FromUser(user);
+        ;
+
+        return UserModelOutput.FromUser(user, skills);
     }
 }

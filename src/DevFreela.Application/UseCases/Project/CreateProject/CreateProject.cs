@@ -21,6 +21,7 @@ public class CreateProject : ICreateProject
             request.TotalCost,
             request.IdClient);
 
+
         await _projectRepository.Create(project, cancellationToken);
 
         return ProjectModelOutput.FromProject(project);

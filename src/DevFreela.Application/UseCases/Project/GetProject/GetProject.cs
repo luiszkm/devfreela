@@ -1,4 +1,5 @@
 ﻿
+using DevFreela.Application.Exceptions;
 using DevFreela.Application.UseCases.Project.Common;
 using DevFreela.Domain.Domain.Repository;
 
@@ -16,7 +17,7 @@ public class GetProject : IGetProject
     {
         var project =
              await _projectRepository.GetById(request.Id, cancellationToken);
-        if (project == null) return null;
+        if (project == null) throw new NotFoundException();
 
 
         return ProjectModelOutput.FromProject(project);

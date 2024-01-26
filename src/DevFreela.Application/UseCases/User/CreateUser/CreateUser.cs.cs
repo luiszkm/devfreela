@@ -2,6 +2,7 @@
 using DevFreela.Application.Exceptions;
 using DevFreela.Application.UseCases.User.Common;
 using DevFreela.Domain.Domain.Authorization;
+using DevFreela.Domain.Domain.Exceptions;
 using DevFreela.Domain.Domain.Repository;
 
 namespace DevFreela.Application.UseCases.User.CreateUser;
@@ -40,9 +41,9 @@ public class CreateUser : ICreateUSer
     private void PasswordValidate(string password)
     {
         if (string.IsNullOrEmpty(password))
-            throw new DoesNotMatchSecurityPolicies();
+            throw new EntityValidationExceptions("the password not match the security policies");
         if (password.Length < 8)
-            throw new DoesNotMatchSecurityPolicies();
+            throw new EntityValidationExceptions("the password not match the security policies");
 
     }
 }

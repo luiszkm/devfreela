@@ -1,4 +1,5 @@
-﻿using DevFreela.Application.UseCases.Session;
+﻿using DevFreela.API.ApiModels.Response;
+using DevFreela.Application.UseCases.Session;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,18 +20,16 @@ public class SessionController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-    public async Task<IActionResult> Login([FromBody] SessionInput inputModel)
+    public async Task<IActionResult> Create([FromBody] SessionInput inputModel)
     {
 
-        var user = await _mediator.Send(inputModel);
-
-        if (user == null)
-        {
-            return BadRequest();
-        }
-
-        return Ok(user);
+        var output = await _mediator.Send(inputModel);
+        var response = new ApiResponse<SessionOutput>(output);
+        return CreatedAtAction(
+            nameof(Create),
+            new { id = output.UserId }, response);
     }
 
 }

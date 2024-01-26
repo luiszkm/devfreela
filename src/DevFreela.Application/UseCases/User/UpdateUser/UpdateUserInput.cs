@@ -1,16 +1,17 @@
 ﻿
+using DevFreela.Application.UseCases.User.Common;
 using MediatR;
 
 namespace DevFreela.Application.UseCases.User.UpdateUser;
 
-public class UpdateUserInput : IRequest
+public class UpdateUserInput : IRequest, IRequest<UserModelOutput>
 {
     public UpdateUserInput(
         Guid id,
-        string name,
-        string email,
-        DateTime birthDate,
-        bool active)
+        string? name = null,
+        string? email = null,
+        DateTime? birthDate = null,
+        bool? active = null)
     {
         Id = id;
         Name = name;
@@ -20,11 +21,11 @@ public class UpdateUserInput : IRequest
     }
 
 
-    public Guid Id { get; private set; }
-    public string? Name { get; private set; }
-    public string? Email { get; private set; }
-    public DateTime? BirthDate { get; private set; }
-    public bool? Active { get; private set; }
+    public Guid Id { get; set; }
+    public string? Name { get; set; }
+    public string? Email { get; set; }
+    public DateTime? BirthDate { get; set; }
+    public bool? Active { get; set; }
 
 
 }

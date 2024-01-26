@@ -1,6 +1,10 @@
 ﻿
 
+using System.Security.Cryptography;
+using System.Text;
 using Bogus;
+using DevFreela.Domain.Domain.Enums;
+using DevFreela.Infrastructure.Models;
 using DevFreela.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,17 +20,8 @@ public class BaseFixture
     public bool GetRandomBoolean()
         => new Random().NextDouble() < 0.5;
 
-    public List<Guid> GetListGuid(int total = 5)
-    {
-        var list = new List<Guid>();
-
-        for (int i = 0; i < total; i++)
-        {
-            list.Add(Guid.NewGuid());
-        }
-
-        return list;
-    }
+    public Guid GetRandomGuid()
+        => Guid.NewGuid();
 
     public string GetValidEmail()
         => Faker.Internet.Email().ToLower();
@@ -43,6 +38,95 @@ public class BaseFixture
     public string GetValidDescription()
         => Faker.Lorem.Paragraph();
 
+    public string GetPasswordHash(string password)
+    {
+        var sha256 = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(password);
+        var hash = sha256.ComputeHash(bytes);
+        var builder = new StringBuilder();
+        for (int i = 0; i < hash.Length; i++)
+        {
+            builder.Append(hash[i].ToString("X2"));
+        }
+
+        return builder.ToString();
+    }
+
+    public FreelancersInterested
+        GetValidFreelancersInterested(
+            Guid projectId,
+        Guid userId)
+        => new(projectId, userId);
+
+    public DomainEntity.User GetValidUser(
+        UserRole role = UserRole.Client,
+        string? email = null,
+        string? password = null)
+        => new(
+            GetValidName(),
+            email ?? GetValidEmail(),
+            password != null ? GetPasswordHash(password) : GetValidPassword(),
+            GetValidBirthDate(),
+            role);
+
+    public List<DomainEntity.User>
+        GetExampleUserList(int length = 10)
+        => Enumerable.Range(1, length)
+            .Select(_ => GetValidUser())
+            .ToList();
+
+    public List<DomainEntity.Skill> GetValidSkillList()
+    {
+        var skills = new List<DomainEntity.Skill>();
+        for (int i = 0; i < 5; i++)
+        {
+            skills.Add(new DomainEntity.Skill(
+                Faker.Company.Random.Words()));
+        }
+
+        return skills;
+    }
+
+    public DomainEntity.Project
+        GetValidProject(
+            Guid? idClient = null,
+            bool? withFreelancersInterested = false
+            )
+    {
+        var project = new DomainEntity.Project(
+            GetValidName(),
+            GetValidDescription(),
+            1000,
+            idClient ?? GetRandomGuid()
+        );
+        if (withFreelancersInterested.Value)
+        {
+            var listUser = GetExampleUserList();
+
+            foreach (var user in listUser)
+            {
+                project.AddFreelancersInterested(user);
+            }
+        }
+
+
+        return project;
+    }
+
+
+
+
+    public List<DomainEntity.Project>
+        GetExampleProjectList(int length = 10)
+        => Enumerable.Range(1, length)
+            .Select(_ => GetValidProject())
+            .ToList();
+
+    public void ClearDatabase()
+    {
+        using var dbContext = CreateDbContext();
+        dbContext.Database.EnsureDeleted();
+    }
 
     public DevFreelaDbContext CreateDbContext(bool preserverData = false)
     {

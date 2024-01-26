@@ -9,7 +9,9 @@ public class ProjectModelOutput
         string title,
         string description,
         decimal totalCost,
-        DateTime createdAt)
+        DateTime createdAt,
+        IReadOnlyList<ProjectModelOutputFreelancerInterested> freelancersInterested,
+        Guid? idFreelancer = null)
     {
         Id = id;
         ClientId = clientId;
@@ -17,6 +19,8 @@ public class ProjectModelOutput
         Description = description;
         TotalCost = totalCost;
         CreatedAt = createdAt;
+        FreelancersInterested = freelancersInterested;
+        IdFreelancer = idFreelancer ?? null;
 
     }
 
@@ -27,6 +31,15 @@ public class ProjectModelOutput
     public DateTime CreatedAt { get; private set; }
     public Guid ClientId { get; private set; }
 
+    public Guid? IdFreelancer { get; private set; }
+
+    public IReadOnlyList
+        <ProjectModelOutputFreelancerInterested> FreelancersInterested
+    { get; set; }
+
+    public DomainEntity.User? User { get; set; }
+
+
 
     public static ProjectModelOutput FromProject(DomainEntity.Project project)
     {
@@ -36,7 +49,24 @@ public class ProjectModelOutput
             project.Title,
             project.Description,
             project.TotalCost,
-            project.CreatedAt
+            project.CreatedAt,
+            project.FreelancersInterested
+                .Select(freelancer =>
+                    new ProjectModelOutputFreelancerInterested(freelancer.Id, freelancer.Name))
+                .ToList().AsReadOnly(),
+            project.IdFreelancer
         );
+    }
+
+    public class ProjectModelOutputFreelancerInterested
+    {
+
+        public Guid FreelancerId { get; private set; }
+        public string FreelancerFullName { get; private set; }
+        public ProjectModelOutputFreelancerInterested(Guid freelancerId, string freelancerFullName)
+        {
+            FreelancerId = freelancerId;
+            FreelancerFullName = freelancerFullName;
+        }
     }
 }

@@ -6,4 +6,6 @@ namespace DevFreela.Domain.Domain.Repository;
 public interface ISkillRepository
 {
     List<Skill> GetAll();
+
+    Skill GetById(Guid id);
 }

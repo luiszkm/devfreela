@@ -151,7 +151,6 @@ public class UserTest
     }
 
 
-
     [Theory(DisplayName = nameof(UpdatePassword))]
     [Trait("Domain", "User - Instantiation")]
     [InlineData("12345678")]
@@ -183,12 +182,55 @@ public class UserTest
         user.Comments.Should().BeEmpty();
     }
 
+
+    [Theory(DisplayName = nameof(UpdatePassword))]
+    [Trait("Domain", "User - Instantiation")]
+    [InlineData("2222")]
+    [InlineData("errado")]
+
+    public void ThrowWhenOldPasswordNotMatch(string OldPassword)
+    {
+        var password = _fixture.GetValidPassword();
+        var newPassword = _fixture.GetValidPassword();
+        var fixture = _fixture.CreateValidUser();
+        var user = new DomainEntity.User(
+            fixture.Name,
+            fixture.Email,
+            password,
+            fixture.BirthDate,
+            fixture.Role);
+        var action = () => user.UpdatePassword(OldPassword, newPassword);
+        action.Should().Throw<EntityValidationExceptions>();
+
+    }
+
+
+    [Fact(DisplayName = nameof(UpdatePassword))]
+    [Trait("Domain", "User - Instantiation")]
+
+
+    public void ThrowWhenNewPasswordIsSameTheCurrentPassword()
+    {
+        var password = _fixture.GetValidPassword();
+        var fixture = _fixture.CreateValidUser();
+        var user = new DomainEntity.User(
+            fixture.Name,
+            fixture.Email,
+            password,
+            fixture.BirthDate,
+            fixture.Role);
+        var action = () => user.UpdatePassword(password, password);
+        action.Should().Throw<EntityValidationExceptions>();
+
+    }
     [Theory(DisplayName = nameof(ThrowWhenNameIsInvalid))]
     [Trait("Domain", "User - Instantiation")]
     [InlineData("")]
     [InlineData(null)]
     [InlineData("a")]
     [InlineData("    ")]
+
+
 
     public void ThrowWhenNameIsInvalid(string? name)
     {
