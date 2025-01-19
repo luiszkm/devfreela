@@ -1,6 +1,7 @@
 ﻿
 using DevFreela.Domain.Domain.Interfaces;
 using DevFreela.Infrastructure.MessageBus;
+using DevFreela.Infrastructure.Payments;
 using DevFreela.Infrastructure.Persistence;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -72,6 +73,7 @@ public static class ConnectionsConfigurations
         this IServiceCollection services)
     {
         services.AddScoped<IMessageBusService, MessageBusService>();
+        services.AddScoped<IPayment, Payment>();
 
         return services;
     }

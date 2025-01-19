@@ -1,9 +1,9 @@
 ﻿
 using DevFreela.Domain.Domain.Entities.Models;
 using DevFreela.Domain.Domain.Enums;
+using DevFreela.Domain.Domain.Exceptions;
 using DevFreela.Domain.Domain.seddwork;
 using DevFreela.Domain.Domain.Validation;
-using DevFreela.Domain.Domain.Exceptions;
 
 namespace DevFreela.Domain.Domain.Entities;
 

@@ -11,6 +11,7 @@ using DevFreela.Domain.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using DevFreela.Application.UseCases.Project.FinishedProject;
 
 namespace DevFreela.API.Controllers;
 
@@ -125,6 +126,21 @@ public class ProjectsController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpPatch("/finish")]
+    [ProducesResponseType(typeof(ApiResponse<ProjectModelOutput>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+
+    public async Task<IActionResult>
+        FinishedProject([FromBody] FinishedProjectInput inputModel)
+    {
+        await _mediator.Send(inputModel);
+
+        return Ok();
+    }
+
 
 
 }

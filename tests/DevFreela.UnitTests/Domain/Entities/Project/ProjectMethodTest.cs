@@ -48,6 +48,14 @@ public class ProjectMethodTest
         project.FreelancersInterested.Should().HaveCount(11);
         project.FreelancersInterested.Should().NotContain(projectRemoved);
 
+
+        var arrayInt = new int[] { 2, 7 };
+        var t = project.EncontrarIndices(arrayInt, 9);
+
+
+
+
+
     }
 
     [Fact(DisplayName = nameof(ContractFreelancer))]

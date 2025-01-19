@@ -34,7 +34,7 @@ public class ChangeStatusTest
         var inputModel = new ProjectUseCase.ChangeStatus
             .ChangeStatusInputModel(
                 project.Id,
-                ChangeStatusInputModel.ProjectStatusEnum.InProgress);
+                ProjectStatusEnum.InProgress);
 
         await useCase.Handle(inputModel, new CancellationToken());
         project.Status.Should().Be(ProjectStatusEnum.InProgress);
@@ -58,7 +58,7 @@ public class ChangeStatusTest
         var inputModel = new ProjectUseCase.ChangeStatus
             .ChangeStatusInputModel(
                 project.Id,
-                ChangeStatusInputModel.ProjectStatusEnum.Cancelled);
+                ProjectStatusEnum.Cancelled);
 
         await useCase.Handle(inputModel, new CancellationToken());
         project.Status.Should().Be(ProjectStatusEnum.Cancelled);
@@ -79,7 +79,7 @@ public class ChangeStatusTest
         var inputModel = new ProjectUseCase.ChangeStatus
             .ChangeStatusInputModel(
                 project.Id,
-                ChangeStatusInputModel.ProjectStatusEnum.Suspended);
+                ProjectStatusEnum.Suspended);
 
         await useCase.Handle(inputModel, new CancellationToken());
         project.Status.Should().Be(ProjectStatusEnum.Suspended);
@@ -102,7 +102,7 @@ public class ChangeStatusTest
         var inputModel = new ProjectUseCase.ChangeStatus
             .ChangeStatusInputModel(
                 project.Id,
-                ChangeStatusInputModel.ProjectStatusEnum.Finished);
+                ProjectStatusEnum.Finished);
 
         await useCase.Handle(inputModel, new CancellationToken());
         project.Status.Should().Be(ProjectStatusEnum.Finished);

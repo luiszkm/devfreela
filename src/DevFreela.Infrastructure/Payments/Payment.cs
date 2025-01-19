@@ -15,11 +15,18 @@ public class Payment : IPayment
     {
         _messageBusService = messageBusService;
     }
-    public async void ProcessPayment(PaymentInput paymentInfo)
+    // public async void ProcessPayment(PaymentInput paymentInfo)
+    // {
+    //     var paymentInfoJson = JsonSerializer.Serialize(paymentInfo);
+    //     var paymentInfoBytes = Encoding.UTF8.GetBytes(paymentInfoJson);
+    //     _messageBusService.PublishMessage(QUEUE_NAME, paymentInfoBytes);
+    //
+    // }
+
+    public void ProcessPayment(string message)
     {
-        var paymentInfoJson = JsonSerializer.Serialize(paymentInfo);
+        var paymentInfoJson = JsonSerializer.Serialize(message);
         var paymentInfoBytes = Encoding.UTF8.GetBytes(paymentInfoJson);
         _messageBusService.PublishMessage(QUEUE_NAME, paymentInfoBytes);
-
     }
 }

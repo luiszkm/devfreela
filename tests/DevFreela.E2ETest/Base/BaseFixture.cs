@@ -1,11 +1,11 @@
 ﻿
 
-using System.Security.Cryptography;
 using Bogus;
 using DevFreela.Domain.Domain.Enums;
 using DevFreela.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography;
 using System.Text;
 
 
@@ -157,6 +157,7 @@ public class BaseFixture
 
         if (!preserverData)
             context.Database.EnsureCreated();
+
 
         return context;
     }

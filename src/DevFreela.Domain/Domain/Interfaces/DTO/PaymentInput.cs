@@ -1,7 +1,7 @@
 ﻿
 
 namespace DevFreela.Domain.Domain.Interfaces.DTO;
-public class PaymentInput
+public interface PaymentInput
 {
 
 

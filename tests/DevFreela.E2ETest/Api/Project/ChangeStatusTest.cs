@@ -23,9 +23,9 @@ public class ChangeStatusTest
 
     [Theory(DisplayName = nameof(ChangeStatus))]
     [Trait("E2E/API", "Project/ChangeStatus - Endpoints")]
-    [InlineData(ChangeStatusInputModel.ProjectStatusEnum.InProgress)]
-    [InlineData(ChangeStatusInputModel.ProjectStatusEnum.Suspended)]
-    public async Task ChangeStatus(ChangeStatusInputModel.ProjectStatusEnum status)
+    [InlineData(ProjectStatusEnum.InProgress)]
+    [InlineData(ProjectStatusEnum.Suspended)]
+    public async Task ChangeStatus(ProjectStatusEnum status)
     {
         var dbContext = _fixture.CreateApiDbContextInMemory();
         var (user, password) = await _fixture.GetUserInDataBase();
@@ -66,7 +66,7 @@ public class ChangeStatusTest
         userAuthenticate.Result.Should().BeTrue();
 
         var inputModel = new ChangeStatusInputModel(project.Id,
-            ChangeStatusInputModel.ProjectStatusEnum.Cancelled);
+            ProjectStatusEnum.Cancelled);
 
         var (response, _) = await _fixture
             .ApiClient.Patch<NoContentResult>($"/projects/{project.Id}", inputModel);
@@ -103,7 +103,7 @@ public class ChangeStatusTest
         userAuthenticate.Result.Should().BeTrue();
 
         var inputModel = new ChangeStatusInputModel(project.Id,
-            ChangeStatusInputModel.ProjectStatusEnum.Finished);
+            ProjectStatusEnum.Finished);
 
         var (response, _) = await _fixture
             .ApiClient.Patch<NoContentResult>($"/projects/{project.Id}", inputModel);
@@ -131,7 +131,7 @@ public class ChangeStatusTest
         userAuthenticate.Result.Should().BeTrue();
 
         var inputModel = new ChangeStatusInputModel(projectId,
-            ChangeStatusInputModel.ProjectStatusEnum.InProgress);
+            ProjectStatusEnum.InProgress);
 
         var (response, output) = await _fixture
             .ApiClient.Patch<ProblemDetails>($"/projects/{projectId}", inputModel);
@@ -152,7 +152,7 @@ public class ChangeStatusTest
         _fixture.ApiClient.RemoveAuthorizationHeader();
 
         var inputModel = new ChangeStatusInputModel(project.Id,
-            ChangeStatusInputModel.ProjectStatusEnum.InProgress);
+            ProjectStatusEnum.InProgress);
 
         var (response, _) = await _fixture
             .ApiClient.Patch<ProblemDetails>($"/projects/{project.Id}", inputModel);

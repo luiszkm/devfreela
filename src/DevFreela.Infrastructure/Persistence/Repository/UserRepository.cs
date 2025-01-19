@@ -1,14 +1,13 @@
-﻿using System.Security.Cryptography;
-using Azure.Core;
-using DevFreela.Application.Exceptions;
+﻿using DevFreela.Application.Exceptions;
 using DevFreela.Domain.Domain.Authorization;
 using DevFreela.Domain.Domain.Entities;
 using DevFreela.Domain.Domain.Entities.Models;
 using DevFreela.Domain.Domain.Exceptions;
 using DevFreela.Domain.Domain.Repository;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
 using DevFreela.Infrastructure.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace DevFreela.Infrastructure.Persistence.Repository;
 public class UserRepository : IUserRepository

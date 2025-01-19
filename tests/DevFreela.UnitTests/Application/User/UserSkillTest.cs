@@ -2,7 +2,6 @@
 
 using DevFreela.Application.UseCases.User.UserSkill;
 using DevFreela.UnitTests.Application.Common;
-using DevFreela.UnitTests.Domain.Entities.User;
 using Moq;
 
 namespace DevFreela.UnitTests.Application.User;
